@@ -44,6 +44,7 @@ public:
     int getCopies() const { return copies; }
 };
 
+/*
 class Book : public BasicInformation
 {
 private: 
@@ -71,6 +72,7 @@ public:
         monthPublished = m;
     }
 };
+*/
 
 class ChildrensBook : public BasicInformation
 {
@@ -332,168 +334,6 @@ int main() {
     // Calls function to load magazines from csv file into a vector called 'magazines' of the type Magazine 
     std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
 
-    std::cout << "\n=== 3. Print the full information of the first book in the list (ID=0) (ID, title, author, other metadata..., and number of copies) ===" << std::endl;
-    // Displaying the full information of the book at index 0 in 'books'
-    displayAllBookInfo(books[0]);
-
-    std::cout << "\n=== 4. Print the full information of *any* Magazine in the list (ID, title, edition, other metadata..., and number of copies) ===" << std::endl;
-    // Displaying the full information of the magazine at index 0 in 'magazines'
-    displayAllMagInfo(magazines[0]);
-
-    std::cout << "\n=== 5. Print the full list of books in short-form format ===" << std::endl;
-    // Going through all the books in 'books' and displaying it in short-form format
-    for(Book book:books)
-        displayPartialBookInfo(book);
-
-    std::cout << "\n=== 6. Print the full list of magazines in short-form format ===" << std::endl;
-    // Going through all the magazines in 'magazines' and displaying it in short-form format
-    for(Magazine magazine:magazines)
-        displayPartialMagInfo(magazine);
-
-    std::cout << "\n=== 7. Print the latest edition of the magazine 'Scientific Wonders' short-form format ===" << std::endl;
-    // Storing the filtered vector of type Magazine into sortedScienceMags and displaying it in short-form format
-    std::vector<Magazine> sortedScienceMags = filterNewestIssue(magazines, "Scientific Wonders");
-    displayPartialMagInfo(sortedScienceMags[0]);
-
-    std::cout << "\n=== 8. Print list in short-form format of all items that cost more than '$17.00' ===" << std::endl;
-    // Going through all books and magazines and checking the condition that it costs more than 17 and displaying 
-    // the information in short-form format if it is
-    for(Book book:books)
-    {
-        if(book.price > 17)
-            displayPartialBookInfo(book);
-    }
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getPrice() > 17)
-            displayPartialMagInfo(magazine);
-    }
-
-    std::cout << "\n=== 9. Print list in short-form format of all items that belong to the 'Fantasy' genre ===" << std::endl;
-    // Going through all books and magazines and checking the condition that it is a 'Fantasy' genre and displaying 
-    // the information in short-form format if it is
-    for(Book book:books)
-    {
-        if(book.genre == "Fantasy")
-            displayPartialBookInfo(book);
-    }
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getGenre() == "Fantasy")
-            displayPartialMagInfo(magazine);
-    }
-
-    std::cout << "\n=== 10. Print list in short-form format of all magazines with the title 'Culinary Trends', and are '11th' edition ===" << std::endl;
-    // Going through all magazines and checking the condition that it titled 'Culinary Trends" and is a '11th' edition and displaying
-    // the information in short-form format if it is
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getTitle() == "Culinary Trends" && magazine.getEdition() == "11th")
-            displayPartialMagInfo(magazine);
-    }
-
-    std::cout << "\n=== 11. Print list in short-form format of all items published between '1900' and '1950' ===" << std::endl;
-    // Going through all books and magazines and checking the condition that it is published between 1900 and 1950 and displaying 
-    // the information in short-form format if it is
-    for(Book book:books)
-    {
-        if(book.yearPublished >= 1900 && book.yearPublished <= 1950)
-            displayPartialBookInfo(book);
-    }
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getYearPublished() >= 1900 && magazine.getYearPublished() <= 1950)
-            displayPartialMagInfo(magazine);
-    }
-
-    std::cout << "\n=== 12. Print list in short-form format of all 'paperback' Books authored by 'Suzanne Collins' ===" << std::endl;
-    // Going through all books and checking the condition that it is a 'paperback' edition and by 'Suzanne Collins' and displaying 
-    // the information in short-form format if it is
-    for(Book book:books)
-    {
-        if((book.edition == "paperback" || book.edition == "Paperback") && book.author == "Suzanne Collins")
-            displayPartialBookInfo(book);
-    }
-
-    std::cout << "\n=== 13. Print list in short-form format of all items whose titles contain the text 'and' ===" << std::endl;
-    // Storing the books and magazines with titles containing the text 'and' in their respective vectors
-    std::vector<Book> quieredBooks = findQueriedBook(books, "and");
-    std::vector<Magazine> quieredMags = findQueriedMag(magazines, "and");
-    
-    // Going through all books and magazines in the quiered vectors and displaying the information in short-form format
-    for(Book quieryBook:quieredBooks)
-        displayPartialBookInfo(quieryBook);
-    for(Magazine quieryMag:quieredMags)
-        displayPartialMagInfo(quieryMag);
-
-    std::cout << "\n=== 14. Print list in short-form format of all 'hardcover' Books ===" << std::endl;
-    // Going through all books and checking the condition that it is a 'hardcover' edition and displaying 
-    // the information in short-form format if it is
-    for(Book book:books)
-    {
-        if(book.edition == "hardcover" || book.edition == "Hardcover")
-            displayPartialBookInfo(book);
-    }
-
-    std::cout << "\n=== 15. Perform a 'sale' of all magazines with the title 'Culinary Trends', and are '11th' edition (remember to update 'sales.txt')===" << std::endl;
-    // Going through all magazines and checking the condition that it titled 'Culinary Trends" and is a '11th' edition 
-    // and performing a sale on the magazine if it is
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getTitle() == "Culinary Trends" && magazine.getEdition() == "11th")
-            magSale(magazines, magazine);
-    }
-
-    std::cout << "\n=== 16. Perform a 'sale' of all items published between '1900' and '1950' ===" << std::endl;
-    // Going through all books and magazines and checking the condition that it is published between 1900 and 1950 and performing sales on them if it is
-    for(Book book:books)
-    {
-        if(book.yearPublished >= 1900 && book.yearPublished <= 1950)
-            bookSale(books, book);
-    }
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getYearPublished() >= 1900 && magazine.getYearPublished() <= 1950)
-            magSale(magazines, magazine);
-    }
-
-    std::cout << "\n=== 17. Print the full info of all books in alphabetical order ===" << std::endl;
-    // Sorting the books alphabetically and storing it in alphabetizedFullBooks and then displaying the full information 
-    // of those books
-    std::vector<Book> alphabetizedFullBooks = alphabetizeBook(books);
-    for(Book alphaBook:alphabetizedFullBooks)
-    {
-        displayAllBookInfo(alphaBook);
-    }
-
-    std::cout << "\n=== 18. Print the full info for *all* magazines in alphabetical order, also sorted by latest issue first ===" << std::endl;
-    // Sorting the magazines alphabetically first and storing it in alphabetizedFullMags
-    std::vector<Magazine> alphabetizedFullMags = alphabetizeMag(magazines);
-
-    // Store every unique title of the magazines in alphabetizedFullMags
-    std::vector<std::string> titles;
-    titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
-    std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-    for(Magazine mag:alphabetizedFullMags)
-    {
-        // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-        // the mag title then loop 
-        if(mag.getTitle() != currentTitle)
-        {
-            titles.push_back(mag.getTitle());
-            currentTitle = mag.getTitle();
-        }
-    }
-
-    // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-    // information of the magazine and loop
-    std::vector<Magazine> alphabetizedAndLatest;
-    for(std::string t:titles)
-    {
-        alphabetizedAndLatest = filterNewestIssue(magazines, t);
-        for(Magazine mag:alphabetizedAndLatest)
-            displayAllMagInfo(mag);
-    }
 }
 
 // Displays the full book information in the format KEY: VALUE | for book
