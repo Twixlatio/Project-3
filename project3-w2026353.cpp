@@ -5,6 +5,131 @@
 #include <fstream>
 #include <sstream>
 
+// Overview:
+// Books: id, Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Copies
+// Children's books: id, Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Target Age,Copies
+// Cook books: id, Title,Author,Price,Year Published,Pagecount,Genre,Cuisine Type,Summary,Edition,Copies
+// Graphic novels: id, Title,Author/Illustrator,Price,Year Published,Pagecount,Genre,Art Style,Summary,Issue,Edition,Copies
+// Magazines: id, Title,Edition,Issue,Year Published,Month Published,Price,Page Count,Genre,Summary,Copies
+// Puzzles & Games: id, Title,Author,Price,Year Published,Pagecount,Genre,Type,Summary,Edition,Copies
+
+// Base class basicInformation
+class BasicInformation
+{
+private:
+    int id; 
+    std::string title;
+    int yearPublished;
+    float price;
+    int pageCount;
+    std::string genre;
+    std::string summary;
+    std::string edition;
+    int copies;
+public:
+    // Constructor sets all the values of the private member variables
+    BasicInformation();
+    BasicInformation(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c) 
+        : id(i), title(t), yearPublished(y), price(p), pageCount(pg), genre(g), summary(s), edition(e), copies(c) {}
+
+    // Getter functions for all the private member variables 
+    int getId() const { return id; }
+    std::string getTitle() const { return title; }
+    int getYearPublished() const { return yearPublished; }
+    float getPrice() const { return price; }
+    int getPageCount() const { return pageCount; }
+    std::string getGenre() const { return genre; }
+    std::string getSummary() const { return summary; }
+    std::string getEdition() const { return edition; }
+    int getCopies() const { return copies; }
+};
+
+class Book : public BasicInformation
+{
+private: 
+    std::string author;
+public:
+    Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) 
+    {
+        BasicInformation(i, t, y, p, pg, g, s, e, c);
+        author = a;
+    }
+};
+
+class Magazine : public BasicInformation
+{
+private: 
+    std::string author;
+    int issue;
+    std::string monthPublished;
+public:
+    Magazine(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, int is, std::string m) 
+    {
+        BasicInformation(i, t, y, p, pg, g, s, e, c);
+        author = a;
+        issue = is;
+        monthPublished = m;
+    }
+};
+
+class ChildrensBook : public BasicInformation
+{
+private: 
+    std::string author;
+    int targetAge;
+public:
+    ChildrensBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, int ta) 
+    {
+        BasicInformation(i, t, y, p, pg, g, s, e, c);
+        author = a;
+        targetAge = ta;
+    }
+};
+
+class PuzzlesAndGames : public BasicInformation
+{
+private: 
+    std::string author;
+    std::string type;
+public:
+    PuzzlesAndGames(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ty) 
+    {
+        BasicInformation(i, t, y, p, pg, g, s, e, c);
+        author = a;
+        type = ty;
+    }
+};
+
+class CookBook : public BasicInformation
+{
+private: 
+    std::string author;
+    std::string cuisineType;
+public:
+    CookBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ct) 
+    {
+        BasicInformation(i, t, y, p, pg, g, s, e, c);
+        author = a;
+        cuisineType = ct;
+    }
+};
+
+class GraphicNovels : public BasicInformation
+{
+private: 
+    std::string author;
+    std::string artStyle;
+    int issue;
+public:
+    GraphicNovels(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string as, int is) 
+    {
+        BasicInformation(i, t, y, p, pg, g, s, e, c);
+        author = a;
+        artStyle = as;
+        issue = is;
+    }
+};
+
 // TODO define your book structure or container
 // Using a Book struct to store the information of every book
 struct Book 
@@ -160,6 +285,15 @@ std::vector<Magazine> loadMagazinesFromCSV(const std::string& filename, int id) 
     file.close();
     return magazines;
 }
+
+class ISellable {
+public:
+    // getCurrentPrice returns the current price of the item
+    virtual float getCurrentPrice() const = 0;
+    // sell performs a single "sale" of an item, and returns true if the sale was successful
+    // this will return false if the sale fails due to insufficient number of items in inventory
+    virtual bool sell() = 0;
+};
 
 // Function Prototypes
 void displayAllBookInfo(Book book);
