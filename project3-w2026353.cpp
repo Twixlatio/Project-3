@@ -28,7 +28,7 @@ private:
     int copies;
 public:
     // Constructor sets all the values of the private member variables
-    BasicInformation();
+    BasicInformation() {}
     BasicInformation(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c) 
         : id(i), title(t), yearPublished(y), price(p), pageCount(pg), genre(g), summary(s), edition(e), copies(c) {}
 
@@ -49,6 +49,7 @@ class Book : public BasicInformation
 private: 
     std::string author;
 public:
+    Book() {}
     Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) 
     {
         BasicInformation(i, t, y, p, pg, g, s, e, c);
@@ -59,9 +60,9 @@ public:
 
     void displayLongForm()
     {
-        std::cout << "ID: " << getId() << " | Type: Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << getPrice() << " | Year Published: " 
-              << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() << " | Edition: " << getEdition()
-              << " | Copies: " << getCopies() << std::endl;
+        std::cout << "ID: " << this->getId() << " | Type: Book" << " | Title: " << this->getTitle() << " | Author: " << author << " | Price: $" << this->getPrice() << " | Year Published: " 
+              << this->getYearPublished() << " | Page Count: " << this->getPageCount() << " | Genre: " << this->getGenre() << " | Summary: " << this->getSummary() << " | Edition: " << this->getEdition()
+              << " | Copies: " << this->getCopies() << std::endl;
     }
 
     void displayShortForm()
@@ -347,9 +348,11 @@ std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
         pageCount = std::stoi(tmp);
         std::getline(ss, genre, ',');
         std::getline(ss, summary, ',');
-        std::getline(ss, tmp, ',');
+        std::getline(ss, edition, ',');
         copies = std::stoi(tmp);
-        std::getline(ss, edition);
+
+        //Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Copies
+        //To Kill a Mockingbird,Harper Lee,10.99,1960,281,Fiction,A novel about racial injustice in the Deep South.,hardcover,1
 
         // Declare and populate new Book Struct
         Book book(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author);
@@ -423,15 +426,6 @@ public:
 };
 
 // Function Prototypes
-void displayAllBookInfo(Book book);
-void displayAllMagInfo(Magazine magazine);
-void displayPartialBookInfo(Book book);
-void displayPartialMagInfo(Magazine magazine);
-std::vector<Book> alphabetizeBook(std::vector<Book> books);
-std::vector<Magazine> alphabetizeMag(std::vector<Magazine> mags);
-std::vector<Book> findQueriedBook(std::vector<Book> books, std::string keyword);
-std::vector<Magazine> findQueriedMag(std::vector<Magazine> mags, std::string keyword);
-std::vector<Magazine> filterNewestIssue(std::vector<Magazine> magazines, std::string title);
 int bookSale(std::vector<Book> &books, Book book);
 int magSale(std::vector<Magazine> &mags, Magazine mag);
 void logBook(std::vector<Book> books, Book book);
@@ -452,7 +446,8 @@ int main() {
     // Calls function to load books from csv file into a vector called 'books' of the type Book 
     std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
 
-    
+    for(Book book:books)
+        book.displayLongForm();
 
     // the ID is set to the the size of the books vector because the magazines need to have unique IDs greater than the books
     ID = books.size();
@@ -460,6 +455,9 @@ int main() {
     std::cout << "\n=== 2. Load the list of magazines from the `magazines.csv` file ===" << std::endl;
     // Calls function to load magazines from csv file into a vector called 'magazines' of the type Magazine 
     std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
+
+    for(Magazine mag:magazines)
+        mag.displayLongForm();
 
 }
 
