@@ -50,9 +50,8 @@ private:
     std::string author;
 public:
     Book() {}
-    Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) 
+    Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
-        BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
     }
 
@@ -129,9 +128,8 @@ private:
     int issue;
     std::string monthPublished;
 public:
-    Magazine(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, int is, std::string m) 
+    Magazine(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, int is, std::string m) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
-        BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
         issue = is;
         monthPublished = m;
