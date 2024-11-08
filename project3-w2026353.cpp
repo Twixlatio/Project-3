@@ -44,7 +44,6 @@ public:
     int getCopies() const { return copies; }
 };
 
-/*
 class Book : public BasicInformation
 {
 private: 
@@ -54,6 +53,71 @@ public:
     {
         BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
+    }
+
+    std::string getAuthor() const { return author; }
+
+    void displayLongForm()
+    {
+        std::cout << "ID: " << getId() << " | Type: Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << getPrice() << " | Year Published: " 
+              << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() << " | Edition: " << getEdition()
+              << " | Copies: " << getCopies() << std::endl;
+    }
+
+    void displayShortForm()
+    {
+        std::cout << "Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
+
+    std::vector<Book> alphabetizeBook(std::vector<Book> books)
+    {
+    // Create a vector of type string called 'alphabetized' to store the book titles from 'books'
+    std::vector<std::string> alphabetized;
+    // Create a vector of type Book called 'alphabetizedBooks' to store the Books in alphabetized order
+    std::vector<Book> alphabetizedBooks;
+
+    // Populating 'alphabetized' with all the book titles in 'books'
+    for(Book book:books)
+        alphabetized.push_back(book.getTitle());
+
+    // Performing alphabetical sorting on the strings in 'alphabetized'
+    std::sort(alphabetized.begin(), alphabetized.end());
+
+    // Nested for loop going through the size of 'books' twice
+    // For every element in 'alphabetized', we loop through 'books' to find a book's title that equals the 
+    // the current element in 'alphabetized' and add that book to vector 'alphabetizedBooks' then break out of the 
+    // inner for loop to increment to the next element in 'alphabetized'
+    for(int i=0; i<books.size(); i++)
+    {
+        for(int j=0; j<books.size(); j++)
+        {
+            if(books[j].getTitle() == alphabetized[i])
+            {
+                alphabetizedBooks.push_back(books[j]);
+                break;
+            }
+        }
+    }
+    
+    return alphabetizedBooks; // Vector 'alphabetizedBooks' is returned
+    }
+
+    // Returns a vector array with corresponding books that have the queried keyword in its title
+    std::vector<Book> findQueriedBook(std::vector<Book> books, std::string keyword)
+    {
+        // Create a vector of type Book called 'queriedBooks' to store the Books with keyword
+        std::vector<Book> queriedBooks;
+
+        // For every book, we search for the keyword in the book title and if it is found
+        // then the book is added to 'queriedBooks'
+        for(Book book:books)
+        {
+            size_t found = book.getTitle().find(keyword);
+            if(found!=std::string::npos)
+                queriedBooks.push_back(book);
+        }
+        
+        return queriedBooks; // Vector 'queriedBooks' is returned
     }
 };
 
@@ -71,8 +135,110 @@ public:
         issue = is;
         monthPublished = m;
     }
+
+    std::string getAuthor() const { return author; }
+    int getIssue() const { return issue; }
+    std::string getMonthPublished() const { return monthPublished; }
+
+    void displayLongForm()
+    {
+        std::cout << "ID: " << getId() << " | Type: Magazine" << " | Title: " << getTitle() << " | Edition: " << getEdition() << " | Issue: " << 
+              issue << " | Year Published: " << getYearPublished() << " | Month Published: " << monthPublished << " | Price: $" << 
+              getPrice() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() 
+              << " | Copies: " << getCopies() << std::endl;
+    }
+
+    void displayShortForm()
+    {
+        std::cout << "Magazine; " << getTitle() << "; " << getEdition() << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
+
+    std::vector<Magazine> alphabetizeMag(std::vector<Magazine> mags)
+    {
+    // Create a vector of type string called 'alphabetized' to store the magazine titles from 'mags'
+    std::vector<std::string> alphabetized;
+    // Create a vector of type Magazine called 'alphabetizedMags' to store the Magazines in alphabetized order
+    std::vector<Magazine> alphabetizedMags;
+
+    // Populating 'alphabetized' with all the magazine titles
+    for(Magazine mag:mags)
+        alphabetized.push_back(mag.getTitle());
+
+    // Performing alphabetical sorting on the strings in 'alphabetized'
+    std::sort(alphabetized.begin(), alphabetized.end());
+
+    // Nested for loop going through the size of 'mags' twice
+    // For every element in 'alphabetized', we loop through 'mags' to find a magazines's title that equals the 
+    // the current element in 'alphabetized' and add that magazine to vector 'alphabetizedMags' then break out of the 
+    // inner for loop to increment to the next element in 'alphabetized'
+    for(int i=0; i<mags.size(); i++)
+    {
+        for(int j=0; j<mags.size(); j++)
+        {
+            if(mags[j].getTitle() == alphabetized[i])
+            {
+                alphabetizedMags.push_back(mags[j]);
+                break;
+            }
+        }
+    }
+    return alphabetizedMags; // Vector 'alphabetizedMags' is returned
+    }
+    
+    // Returns a vector array with corresponding magazines that have the queried keyword in its title
+    std::vector<Magazine> findQueriedMag(std::vector<Magazine> mags, std::string keyword)
+    {
+        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
+        std::vector<Magazine> queriedMags;
+
+        // For every magazine, we search for the keyword in the magazine title and if it is found
+        // then the magazine is added to 'queriedMags'
+        for(Magazine mag:mags)
+        {
+            size_t found = mag.getTitle().find(keyword);
+            if(found!=std::string::npos)
+                queriedMags.push_back(mag);
+        }
+
+        return queriedMags; // Vector 'queriedMags' is returned
+    }
+
+    // Filters a vector of type Magazine with a specific title in a desceding order with the latest issue of that magazine displayed first 
+    // and the oldest issue is last
+    std::vector<Magazine> filterNewestIssue(std::vector<Magazine> magazines, std::string title)
+    {
+        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+        std::vector<Magazine> titleMagazines;
+        for(Magazine magazine:magazines)
+        {
+            if(magazine.getTitle() == title)
+                titleMagazines.push_back(magazine);
+        }
+
+        // Creates a vector of type int to store the numbers of the magazine issues
+        std::vector<int> issues;
+        for(Magazine magazine:titleMagazines)
+            issues.push_back(magazine.getIssue());
+
+        // Sort the numbers from greatest to least
+        std::sort(issues.begin(), issues.end(), std::greater<int>());
+
+        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+        std::vector<Magazine> sortedMagazines;
+        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        for(int i = 0; i<issues.size(); i++)
+        {
+            for(Magazine magazine:titleMagazines)
+            {
+                if(magazine.getIssue() == issues[i])
+                    sortedMagazines.push_back(magazine);
+            }
+        }
+        
+        return sortedMagazines; // Vector 'sortedMagazines' is returned
+    }
 };
-*/
 
 class ChildrensBook : public BasicInformation
 {
@@ -86,6 +252,9 @@ public:
         author = a;
         targetAge = ta;
     }
+
+    std::string getAuthor() const { return author; }
+    int getTargetAge() const { return targetAge; }
 };
 
 class PuzzlesAndGames : public BasicInformation
@@ -100,6 +269,9 @@ public:
         author = a;
         type = ty;
     }
+
+    std::string getAuthor() const { return author; }
+    std::string getType() const { return type; }
 };
 
 class CookBook : public BasicInformation
@@ -114,6 +286,9 @@ public:
         author = a;
         cuisineType = ct;
     }
+
+    std::string getAuthor() const { return author; }
+    std::string getCuisineType() const { return cuisineType; }
 };
 
 class GraphicNovels : public BasicInformation
@@ -130,22 +305,10 @@ public:
         artStyle = as;
         issue = is;
     }
-};
 
-// TODO define your book structure or container
-// Using a Book struct to store the information of every book
-struct Book 
-{
-    int id;
-    std::string title;
-    std::string author;
-    float price;
-    int yearPublished;
-    int pageCount;
-    std::string genre;
-    std::string summary;
-    int copies;
-    std::string edition;
+    std::string getAuthor() const { return author; }
+    int getIssue() const { return issue; }
+    std::string getArtStyle() const { return artStyle; }
 };
 
 // Function to read books from a CSV file into a vector of Book structs
@@ -189,7 +352,7 @@ std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
         std::getline(ss, edition);
 
         // Declare and populate new Book Struct
-        Book book = {id++, title, author, price, yearPublished, pageCount, genre, summary, copies, edition};
+        Book book(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author);
         // Add the book to the container
         books.push_back(book);
     }
@@ -198,44 +361,6 @@ std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
     file.close();
     return books;
 }
-
-// Using a Magazine class to store the information of every magazine
-class Magazine
-{
-private:
-    int id; // id starts right after the ids of the books
-    std::string title;
-    std::string edition;
-    int issue;
-    int yearPublished;
-    std::string monthPublished;
-    float price;
-    int pageCount;
-    std::string genre;
-    std::string summary;
-    int copies;
-
-public:
-    // Constructor sets all the values of the private member variables 
-    Magazine(int i, std::string t, std::string e, int is, int y, std::string m, float p, int pg, std::string g, std::string s, int c) 
-        : id(i), title(t), edition(e), issue(is), yearPublished(y), monthPublished(m), price(p), pageCount(pg), genre(g), summary(s), copies(c) {}
-    
-    // Getter functions for all the private member variables 
-    int getId() const { return id; }
-    std::string getTitle() const { return title; }
-    std::string getEdition() const { return edition; }
-    int getIssue() const { return issue; }
-    int getYearPublished() const { return yearPublished; }
-    std::string getMonthPublished() const { return monthPublished; }
-    float getPrice() const { return price; }
-    int getPageCount() const { return pageCount; }
-    std::string getGenre() const { return genre; }
-    std::string getSummary() const { return summary; }
-    int getCopies() const { return copies; }
-
-    // One setter function just to set the variable 'copies'
-    void setCopies(int val) { copies = val; }
-};
 
 // Function to read magazines from a CSV file into a vector of Magazine objects
 std::vector<Magazine> loadMagazinesFromCSV(const std::string& filename, int id) {
@@ -279,7 +404,7 @@ std::vector<Magazine> loadMagazinesFromCSV(const std::string& filename, int id) 
         copies = std::stoi(tmp);
 
         // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
-        Magazine magazine(id++, title, edition, issue, yearPublished, monthPublished, price, pageCount, genre, summary, copies);
+        Magazine magazine(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, issue, monthPublished);
         magazines.push_back(magazine);
     }
 
@@ -327,6 +452,8 @@ int main() {
     // Calls function to load books from csv file into a vector called 'books' of the type Book 
     std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
 
+    
+
     // the ID is set to the the size of the books vector because the magazines need to have unique IDs greater than the books
     ID = books.size();
 
@@ -336,175 +463,7 @@ int main() {
 
 }
 
-// Displays the full book information in the format KEY: VALUE | for book
-void displayAllBookInfo(Book book)
-{
-    std::cout << "ID: " << book.id << " | Type: Book" << " | Title: " << book.title << " | Author: " << book.author << " | Price: $" << book.price << " | Year Published: " 
-              << book.yearPublished << " | Page Count: " << book.pageCount << " | Genre: " << book.genre << " | Summary: " << book.summary << " | Edition: " << book.edition
-              << " | Copies: " << book.copies << std::endl;
-}
-
-// Displays the full magazine information in the format KEY: VALUE | for magazine
-void displayAllMagInfo(Magazine magazine)
-{
-    std::cout << "ID: " << magazine.getId() << " | Type: Magazine" << " | Title: " << magazine.getTitle() << " | Edition: " << magazine.getEdition() << " | Issue: " << 
-              magazine.getIssue() << " | Year Published: " << magazine.getYearPublished() << " | Month Published: " << magazine.getMonthPublished() << " | Price: $" << 
-              magazine.getPrice() << " | Page Count: " << magazine.getPageCount() << " | Genre: " << magazine.getGenre() << " | Summary: " << magazine.getSummary() 
-              << " | Copies: " << magazine.getCopies() << std::endl;
-}
-
-// Displays the partial book information in the format TYPE; TITLE; AUTHOR; YEAR PUBLISHED; COPIES for book 
-void displayPartialBookInfo(Book book)
-{
-    std::cout << "Book; " << book.title << "; " << book.author << "; " << book.yearPublished << "; " << book.copies << std::endl;
-}
-
-// Displays the partial magazine information in the format TYPE; TITLE; EDITION; ISSUE; YEAR PUBLISHED; COPIES for magazine
-void displayPartialMagInfo(Magazine magazine)
-{
-    std::cout << "Magazine; " << magazine.getTitle() << "; " << magazine.getEdition() << "; " << magazine.getIssue() << "; " 
-    << magazine.getYearPublished() << "; " << magazine.getCopies() << std::endl;
-}
-
-// Returns a vector array with corresponding books that has been alphabetized by title
-std::vector<Book> alphabetizeBook(std::vector<Book> books)
-{
-    // Create a vector of type string called 'alphabetized' to store the book titles from 'books'
-    std::vector<std::string> alphabetized;
-    // Create a vector of type Book called 'alphabetizedBooks' to store the Books in alphabetized order
-    std::vector<Book> alphabetizedBooks;
-
-    // Populating 'alphabetized' with all the book titles in 'books'
-    for(Book book:books)
-        alphabetized.push_back(book.title);
-
-    // Performing alphabetical sorting on the strings in 'alphabetized'
-    std::sort(alphabetized.begin(), alphabetized.end());
-
-    // Nested for loop going through the size of 'books' twice
-    // For every element in 'alphabetized', we loop through 'books' to find a book's title that equals the 
-    // the current element in 'alphabetized' and add that book to vector 'alphabetizedBooks' then break out of the 
-    // inner for loop to increment to the next element in 'alphabetized'
-    for(int i=0; i<books.size(); i++)
-    {
-        for(int j=0; j<books.size(); j++)
-        {
-            if(books[j].title == alphabetized[i])
-            {
-                alphabetizedBooks.push_back(books[j]);
-                break;
-            }
-        }
-    }
-    
-    return alphabetizedBooks; // Vector 'alphabetizedBooks' is returned
-}
-
-// Returns a vector array with corresponding magazines that has been alphabetized by title
-std::vector<Magazine> alphabetizeMag(std::vector<Magazine> mags)
-{
-    // Create a vector of type string called 'alphabetized' to store the magazine titles from 'mags'
-    std::vector<std::string> alphabetized;
-    // Create a vector of type Magazine called 'alphabetizedMags' to store the Magazines in alphabetized order
-    std::vector<Magazine> alphabetizedMags;
-
-    // Populating 'alphabetized' with all the magazine titles
-    for(Magazine mag:mags)
-        alphabetized.push_back(mag.getTitle());
-
-    // Performing alphabetical sorting on the strings in 'alphabetized'
-    std::sort(alphabetized.begin(), alphabetized.end());
-
-    // Nested for loop going through the size of 'mags' twice
-    // For every element in 'alphabetized', we loop through 'mags' to find a magazines's title that equals the 
-    // the current element in 'alphabetized' and add that magazine to vector 'alphabetizedMags' then break out of the 
-    // inner for loop to increment to the next element in 'alphabetized'
-    for(int i=0; i<mags.size(); i++)
-    {
-        for(int j=0; j<mags.size(); j++)
-        {
-            if(mags[j].getTitle() == alphabetized[i])
-            {
-                alphabetizedMags.push_back(mags[j]);
-                break;
-            }
-        }
-    }
-    return alphabetizedMags; // Vector 'alphabetizedMags' is returned
-}
-
-// Returns a vector array with corresponding books that have the queried keyword in its title
-std::vector<Book> findQueriedBook(std::vector<Book> books, std::string keyword)
-{
-    // Create a vector of type Book called 'queriedBooks' to store the Books with keyword
-    std::vector<Book> queriedBooks;
-
-    // For every book, we search for the keyword in the book title and if it is found
-    // then the book is added to 'queriedBooks'
-    for(Book book:books)
-    {
-        size_t found = book.title.find(keyword);
-        if(found!=std::string::npos)
-            queriedBooks.push_back(book);
-    }
-    
-    return queriedBooks; // Vector 'queriedBooks' is returned
-}
-
-// Returns a vector array with corresponding magazines that have the queried keyword in its title
-std::vector<Magazine> findQueriedMag(std::vector<Magazine> mags, std::string keyword)
-{
-    // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
-    std::vector<Magazine> queriedMags;
-
-    // For every magazine, we search for the keyword in the magazine title and if it is found
-    // then the magazine is added to 'queriedMags'
-    for(Magazine mag:mags)
-    {
-        size_t found = mag.getTitle().find(keyword);
-        if(found!=std::string::npos)
-            queriedMags.push_back(mag);
-    }
-
-    return queriedMags; // Vector 'queriedMags' is returned
-}
-
-// Filters a vector of type Magazine with a specific title in a desceding order with the latest issue of that magazine displayed first 
-// and the oldest issue is last
-std::vector<Magazine> filterNewestIssue(std::vector<Magazine> magazines, std::string title)
-{
-    // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-    std::vector<Magazine> titleMagazines;
-    for(Magazine magazine:magazines)
-    {
-        if(magazine.getTitle() == title)
-            titleMagazines.push_back(magazine);
-    }
-
-    // Creates a vector of type int to store the numbers of the magazine issues
-    std::vector<int> issues;
-    for(Magazine magazine:titleMagazines)
-        issues.push_back(magazine.getIssue());
-
-    // Sort the numbers from greatest to least
-    std::sort(issues.begin(), issues.end(), std::greater<int>());
-
-    // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-    std::vector<Magazine> sortedMagazines;
-    // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-    // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
-    for(int i = 0; i<issues.size(); i++)
-    {
-        for(Magazine magazine:titleMagazines)
-        {
-            if(magazine.getIssue() == issues[i])
-                sortedMagazines.push_back(magazine);
-        }
-    }
-    
-    return sortedMagazines; // Vector 'sortedMagazines' is returned
-}
-
+/*
 // Performing sale of book if there is atleast one copy of that book
 int bookSale(std::vector<Book> &books, Book book)
 {
@@ -578,4 +537,4 @@ void logMag(std::vector<Magazine> mags, Magazine mag)
     }
     saleFile.close();
 }
-
+*/
