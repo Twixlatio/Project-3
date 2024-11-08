@@ -42,6 +42,8 @@ public:
     std::string getSummary() const { return summary; }
     std::string getEdition() const { return edition; }
     int getCopies() const { return copies; }
+
+    virtual ~BasicInformation() = default;
 };
 
 class Book : public BasicInformation
@@ -49,7 +51,6 @@ class Book : public BasicInformation
 private: 
     std::string author;
 public:
-    Book() {}
     Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
@@ -59,9 +60,9 @@ public:
 
     void displayLongForm()
     {
-        std::cout << "ID: " << this->getId() << " | Type: Book" << " | Title: " << this->getTitle() << " | Author: " << author << " | Price: $" << this->getPrice() << " | Year Published: " 
-              << this->getYearPublished() << " | Page Count: " << this->getPageCount() << " | Genre: " << this->getGenre() << " | Summary: " << this->getSummary() << " | Edition: " << this->getEdition()
-              << " | Copies: " << this->getCopies() << std::endl;
+        std::cout << "ID: " << getId() << " | Type: Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << getPrice() << " | Year Published: " 
+              << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() << " | Edition: " << getEdition()
+              << " | Copies: " << getCopies() << std::endl;
     }
 
     void displayShortForm()
@@ -69,37 +70,18 @@ public:
         std::cout << "Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
-    std::vector<Book> alphabetizeBook(std::vector<Book> books)
+    std::vector<Book> alphabetize(std::vector<Book> books)
     {
-    // Create a vector of type string called 'alphabetized' to store the book titles from 'books'
-    std::vector<std::string> alphabetized;
-    // Create a vector of type Book called 'alphabetizedBooks' to store the Books in alphabetized order
-    std::vector<Book> alphabetizedBooks;
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<Book> alphabetized = books;
 
-    // Populating 'alphabetized' with all the book titles in 'books'
-    for(Book book:books)
-        alphabetized.push_back(book.getTitle());
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const Book& a, const Book& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
 
-    // Performing alphabetical sorting on the strings in 'alphabetized'
-    std::sort(alphabetized.begin(), alphabetized.end());
-
-    // Nested for loop going through the size of 'books' twice
-    // For every element in 'alphabetized', we loop through 'books' to find a book's title that equals the 
-    // the current element in 'alphabetized' and add that book to vector 'alphabetizedBooks' then break out of the 
-    // inner for loop to increment to the next element in 'alphabetized'
-    for(int i=0; i<books.size(); i++)
-    {
-        for(int j=0; j<books.size(); j++)
-        {
-            if(books[j].getTitle() == alphabetized[i])
-            {
-                alphabetizedBooks.push_back(books[j]);
-                break;
-            }
-        }
-    }
-    
-    return alphabetizedBooks; // Vector 'alphabetizedBooks' is returned
+        return alphabetized; // The sorted vector is returned
     }
 
     // Returns a vector array with corresponding books that have the queried keyword in its title
@@ -152,36 +134,18 @@ public:
         std::cout << "Magazine; " << getTitle() << "; " << getEdition() << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
-    std::vector<Magazine> alphabetizeMag(std::vector<Magazine> mags)
+    std::vector<Magazine> alphabetize(std::vector<Magazine> mags)
     {
-    // Create a vector of type string called 'alphabetized' to store the magazine titles from 'mags'
-    std::vector<std::string> alphabetized;
-    // Create a vector of type Magazine called 'alphabetizedMags' to store the Magazines in alphabetized order
-    std::vector<Magazine> alphabetizedMags;
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<Magazine> alphabetized = mags;
 
-    // Populating 'alphabetized' with all the magazine titles
-    for(Magazine mag:mags)
-        alphabetized.push_back(mag.getTitle());
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const Magazine& a, const Magazine& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
 
-    // Performing alphabetical sorting on the strings in 'alphabetized'
-    std::sort(alphabetized.begin(), alphabetized.end());
-
-    // Nested for loop going through the size of 'mags' twice
-    // For every element in 'alphabetized', we loop through 'mags' to find a magazines's title that equals the 
-    // the current element in 'alphabetized' and add that magazine to vector 'alphabetizedMags' then break out of the 
-    // inner for loop to increment to the next element in 'alphabetized'
-    for(int i=0; i<mags.size(); i++)
-    {
-        for(int j=0; j<mags.size(); j++)
-        {
-            if(mags[j].getTitle() == alphabetized[i])
-            {
-                alphabetizedMags.push_back(mags[j]);
-                break;
-            }
-        }
-    }
-    return alphabetizedMags; // Vector 'alphabetizedMags' is returned
+        return alphabetized; // The sorted vector is returned
     }
     
     // Returns a vector array with corresponding magazines that have the queried keyword in its title
@@ -243,17 +207,28 @@ class ChildrensBook : public BasicInformation
 {
 private: 
     std::string author;
-    int targetAge;
+    std::string targetAge;
 public:
-    ChildrensBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, int ta) 
+    ChildrensBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ta) : BasicInformation(i, t, y, p, pg, g, s, e, c) 
     {
-        BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
         targetAge = ta;
     }
 
     std::string getAuthor() const { return author; }
-    int getTargetAge() const { return targetAge; }
+    std::string getTargetAge() const { return targetAge; }
+
+    void displayLongForm()
+    {
+        std::cout << "ID: " << getId() << " | Type: Children's Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
+              getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() 
+              << " | Edition: " << getEdition() << " | Target Age: " << targetAge << " | Copies: " << getCopies() << std::endl;
+    }
+
+    void displayShortForm()
+    {
+        std::cout << "Children's Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
 };
 
 class PuzzlesAndGames : public BasicInformation
@@ -262,15 +237,26 @@ private:
     std::string author;
     std::string type;
 public:
-    PuzzlesAndGames(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ty) 
+    PuzzlesAndGames(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ty) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
-        BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
         type = ty;
     }
 
     std::string getAuthor() const { return author; }
     std::string getType() const { return type; }
+
+    void displayLongForm()
+    {
+        std::cout << "ID: " << getId() << " | Type: Puzzle/Game Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
+              getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Type: " 
+              << type << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
+    }
+
+    void displayShortForm()
+    {
+        std::cout << "Puzzle/Game Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
 };
 
 class CookBook : public BasicInformation
@@ -279,15 +265,26 @@ private:
     std::string author;
     std::string cuisineType;
 public:
-    CookBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ct) 
+    CookBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ct) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
-        BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
         cuisineType = ct;
     }
 
     std::string getAuthor() const { return author; }
     std::string getCuisineType() const { return cuisineType; }
+
+    void displayLongForm()
+    {
+        std::cout << "ID: " << getId() << " | Type: Cookbook" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
+              getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Cuisine Type: " 
+              << cuisineType << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
+    }
+
+    void displayShortForm()
+    {
+        std::cout << "Cookbook; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
 };
 
 class GraphicNovels : public BasicInformation
@@ -297,9 +294,8 @@ private:
     std::string artStyle;
     int issue;
 public:
-    GraphicNovels(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string as, int is) 
+    GraphicNovels(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string as, int is) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
-        BasicInformation(i, t, y, p, pg, g, s, e, c);
         author = a;
         artStyle = as;
         issue = is;
@@ -308,6 +304,18 @@ public:
     std::string getAuthor() const { return author; }
     int getIssue() const { return issue; }
     std::string getArtStyle() const { return artStyle; }
+
+    void displayLongForm()
+    {
+        std::cout << "ID: " << getId() << " | Type: Graphic Novel" << " | Title: " << getTitle() << " | Author/Illustrator: " << author << " | Price: $" << 
+              getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Art Style: " 
+              << artStyle << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
+    }
+
+    void displayShortForm()
+    {
+        std::cout << "Graphic Novel; " << getTitle() << "; " << author << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
 };
 
 // Function to read books from a CSV file into a vector of Book structs
@@ -414,6 +422,206 @@ std::vector<Magazine> loadMagazinesFromCSV(const std::string& filename, int id) 
     return magazines;
 }
 
+// Function to read magazines from a CSV file into a vector of Magazine objects
+std::vector<ChildrensBook> loadChildrensBooksFromCSV(const std::string& filename, int id) {
+    // declare your container that will hold your list of magazines
+    std::vector<ChildrensBook> cbooks;
+
+    // open file
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file " << filename << std::endl;
+        return cbooks;
+    }
+
+    std::string line;
+    // Skip the header line
+    std::getline(file, line);
+
+    // load lines from the CSV file
+    while (std::getline(file, line)) {
+        std::istringstream ss(line);
+        // variables to hold data from CSV file
+        std::string title,author,genre,summary,edition,targetAge,tmp;
+        float price;
+        int yearPublished, pageCount, copies;
+
+        // Read and parse each field
+        std::getline(ss, title, ',');
+        std::getline(ss, author, ',');
+        std::getline(ss, tmp, ',');
+        price = std::stod(tmp);
+        std::getline(ss, tmp, ',');
+        yearPublished = std::stoi(tmp);
+        std::getline(ss, tmp, ',');
+        pageCount = std::stoi(tmp);
+        std::getline(ss, genre, ',');
+        std::getline(ss, summary, ',');
+        std::getline(ss, edition, ',');
+        std::getline(ss, targetAge, ',');
+        std::getline(ss, tmp, ',');
+        copies = std::stoi(tmp);
+
+        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        ChildrensBook cbook(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, targetAge);
+        cbooks.push_back(cbook);
+    }
+
+    // close file and return vector of magazines
+    file.close();
+    return cbooks;
+}
+
+// Function to read magazines from a CSV file into a vector of Magazine objects
+std::vector<PuzzlesAndGames> loadPAndGFromCSV(const std::string& filename, int id) {
+    // declare your container that will hold your list of magazines
+    std::vector<PuzzlesAndGames> pAndGs;
+
+    // open file
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file " << filename << std::endl;
+        return pAndGs;
+    }
+
+    std::string line;
+    // Skip the header line
+    std::getline(file, line);
+
+    // load lines from the CSV file
+    while (std::getline(file, line)) {
+        std::istringstream ss(line);
+        // variables to hold data from CSV file
+        std::string title,author,genre,type,summary,edition,tmp;
+        float price;
+        int yearPublished, pageCount, copies;
+
+        // Read and parse each field
+        std::getline(ss, title, ',');
+        std::getline(ss, author, ',');
+        std::getline(ss, tmp, ',');
+        price = std::stod(tmp);
+        std::getline(ss, tmp, ',');
+        yearPublished = std::stoi(tmp);
+        std::getline(ss, tmp, ',');
+        pageCount = std::stoi(tmp);
+        std::getline(ss, genre, ',');
+        std::getline(ss, type, ',');
+        std::getline(ss, summary, ',');
+        std::getline(ss, edition, ',');
+        std::getline(ss, tmp, ',');
+        copies = std::stoi(tmp);
+
+        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        PuzzlesAndGames pAndG(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, type);
+        pAndGs.push_back(pAndG);
+    }
+
+    // close file and return vector of magazines
+    file.close();
+    return pAndGs;
+}
+
+std::vector<CookBook> loadCookbooksFromCSV(const std::string& filename, int id) {
+    // declare your container that will hold your list of magazines
+    std::vector<CookBook> cookbooks;
+
+    // open file
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file " << filename << std::endl;
+        return cookbooks;
+    }
+
+    std::string line;
+    // Skip the header line
+    std::getline(file, line);
+
+    // load lines from the CSV file
+    while (std::getline(file, line)) {
+        std::istringstream ss(line);
+        // variables to hold data from CSV file
+        std::string title,author,genre,cuisineType,summary,edition,tmp;
+        float price;
+        int yearPublished, pageCount, copies;
+
+        // Read and parse each field
+        std::getline(ss, title, ',');
+        std::getline(ss, author, ',');
+        std::getline(ss, tmp, ',');
+        price = std::stod(tmp);
+        std::getline(ss, tmp, ',');
+        yearPublished = std::stoi(tmp);
+        std::getline(ss, tmp, ',');
+        pageCount = std::stoi(tmp);
+        std::getline(ss, genre, ',');
+        std::getline(ss, cuisineType, ',');
+        std::getline(ss, summary, ',');
+        std::getline(ss, edition, ',');
+        std::getline(ss, tmp, ',');
+        copies = std::stoi(tmp);
+
+        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        CookBook cookbook(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, cuisineType);
+        cookbooks.push_back(cookbook);
+    }
+
+    // close file and return vector of magazines
+    file.close();
+    return cookbooks;
+}
+
+std::vector<GraphicNovels> loadGraphicNovelsFromCSV(const std::string& filename, int id) {
+    // declare your container that will hold your list of magazines
+    std::vector<GraphicNovels> graphicNovels;
+
+    // open file
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file " << filename << std::endl;
+        return graphicNovels;
+    }
+
+    std::string line;
+    // Skip the header line
+    std::getline(file, line);
+
+    // load lines from the CSV file
+    while (std::getline(file, line)) {
+        std::istringstream ss(line);
+        // variables to hold data from CSV file
+        std::string title,author,genre,artStyle,summary,edition,tmp;
+        float price;
+        int yearPublished, pageCount, issue, copies;
+
+        // Read and parse each field
+        std::getline(ss, title, ',');
+        std::getline(ss, author, ',');
+        std::getline(ss, tmp, ',');
+        price = std::stod(tmp);
+        std::getline(ss, tmp, ',');
+        yearPublished = std::stoi(tmp);
+        std::getline(ss, tmp, ',');
+        pageCount = std::stoi(tmp);
+        std::getline(ss, genre, ',');
+        std::getline(ss, artStyle, ',');
+        std::getline(ss, summary, ',');
+        std::getline(ss, tmp, ',');
+        issue = std::stoi(tmp);
+        std::getline(ss, edition, ',');
+        std::getline(ss, tmp, ',');
+        copies = std::stoi(tmp);
+
+        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        GraphicNovels graphicNovel(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, artStyle, issue);
+        graphicNovels.push_back(graphicNovel);
+    }
+
+    // close file and return vector of magazines
+    file.close();
+    return graphicNovels;
+}
+
 class ISellable {
 public:
     // getCurrentPrice returns the current price of the item
@@ -440,24 +648,38 @@ int main() {
     // the ID starts at 0
     static int ID = 0;
 
-    std::cout << "=== 1. Load the list of books from the `books.csv` file using a function. ===" << std::endl;
+    std::cout << "=== 1. Load Items From Files ===" << std::endl;
     // Calls function to load books from csv file into a vector called 'books' of the type Book 
     std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
-
-    for(Book book:books)
-        book.displayLongForm();
-
-    // the ID is set to the the size of the books vector because the magazines need to have unique IDs greater than the books
     ID = books.size();
-
-    std::cout << "\n=== 2. Load the list of magazines from the `magazines.csv` file ===" << std::endl;
-    // Calls function to load magazines from csv file into a vector called 'magazines' of the type Magazine 
+    std::vector<ChildrensBook> childrensBooks = loadChildrensBooksFromCSV("childrens-books.csv", ID);
+    ID = childrensBooks.size();
+    std::vector<PuzzlesAndGames> puzzlesAndGames = loadPAndGFromCSV("puzzles-games.csv", ID);
+    ID = puzzlesAndGames.size();
+    std::vector<CookBook> cookBooks = loadCookbooksFromCSV("cookbooks.csv", ID);
+    ID = cookBooks.size();
+    std::vector<GraphicNovels> graphicNovels = loadGraphicNovelsFromCSV("graphic-novels.csv", ID);
+    ID = graphicNovels.size();
     std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
 
-    for(Magazine mag:magazines)
-        mag.displayLongForm();
+    std::vector<BasicInformation> allItems;
+    allItems.insert(allItems.end(), books.begin(), books.end());
+    allItems.insert(allItems.end(), childrensBooks.begin(), childrensBooks.end());
+    allItems.insert(allItems.end(), puzzlesAndGames.begin(), puzzlesAndGames.end());
+    allItems.insert(allItems.end(), cookBooks.begin(), cookBooks.end());
+    allItems.insert(allItems.end(), graphicNovels.begin(), graphicNovels.end());
+    allItems.insert(allItems.end(), magazines.begin(), magazines.end());
 
+    for(auto& item:allItems)
+        item.displayShortForm();
 }
+
+/* Professor Comments:
+due to a mistake in magSale() on line 562 where you subtract 1 from the number of copies for the magazines, 
+except you are operating on a *copy* of the magazine object instead of a reference, updating line 555 to use
+a reference "Magazine &mag" and changing your "for" iterator in main() on line 320 to operate on references: 
+"for(Magazine &magazine:magazines)" fixes the bug. you have an identical issue with bookSale()
+*/
 
 /*
 // Performing sale of book if there is atleast one copy of that book
