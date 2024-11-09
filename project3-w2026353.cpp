@@ -45,6 +45,9 @@ public:
 
     virtual void displayLongForm() const = 0;
     virtual void displayShortForm() const = 0;
+
+    
+
     virtual ~BasicInformation() = default;
 };
 
@@ -791,81 +794,75 @@ int main() {
     static int ID = 0;
 
     std::cout << "=== 1. Load Items From Files ===" << std::endl;
-    // Calls function to load books from csv file into a vector called 'books' of the type Book 
-    std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
-    ID = books.size();
-    std::vector<ChildrensBook> childrensBooks = loadChildrensBooksFromCSV("childrens-books.csv", ID);
-    ID = childrensBooks.size();
-    std::vector<PuzzlesAndGames> puzzlesAndGames = loadPAndGFromCSV("puzzles-games.csv", ID);
-    ID = puzzlesAndGames.size();
-    std::vector<CookBook> cookBooks = loadCookbooksFromCSV("cookbooks.csv", ID);
-    ID = cookBooks.size();
-    std::vector<GraphicNovels> graphicNovels = loadGraphicNovelsFromCSV("graphic-novels.csv", ID);
-    ID = graphicNovels.size();
-    std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
-
     std::vector<BasicInformation*> allItems;
     BasicInformation* temp;
-    
+    // Calls function to load books from csv file into a vector called 'books' of the type Book 
+    std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
     for(Book &book:books)
     {
         temp = &book;
         allItems.push_back(temp);
     }
-
+    ID = allItems.size();
+    std::vector<ChildrensBook> childrensBooks = loadChildrensBooksFromCSV("childrens-books.csv", ID);
     for(ChildrensBook &book:childrensBooks)
     {
         temp = &book;
         allItems.push_back(temp);
     }
-
+    ID = allItems.size();
+    std::vector<PuzzlesAndGames> puzzlesAndGames = loadPAndGFromCSV("puzzles-games.csv", ID);
     for(PuzzlesAndGames &book:puzzlesAndGames)
     {
         temp = &book;
         allItems.push_back(temp);
     }
-
+    ID = allItems.size();
+    std::vector<CookBook> cookBooks = loadCookbooksFromCSV("cookbooks.csv", ID);
     for(CookBook &book:cookBooks)
     {
         temp = &book;
         allItems.push_back(temp);
     }
-
+    ID = allItems.size();
+    std::vector<GraphicNovels> graphicNovels = loadGraphicNovelsFromCSV("graphic-novels.csv", ID);
     for(GraphicNovels &novel:graphicNovels)
     {
         temp = &novel;
         allItems.push_back(temp);
     }
-
+    ID = allItems.size();
+    std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
     for(Magazine &mag:magazines)
     {
         temp = &mag;
         allItems.push_back(temp);
     }
+    ID = allItems.size();
 
-    std::cout << "=== 2. Print full info for all items using a single std container to demonstrate polymorphism ===" << std::endl;
-    for(BasicInformation* item:allItems)
-    {
-        item->displayShortForm();
-    }
+    // std::cout << "\n=== 2. Print full info for all items using a single std container to demonstrate polymorphism ===" << std::endl;
+    // for(auto* item:allItems)
+    // {
+    //     item->displayLongForm();
+    // }
 
-    /*
-    std::cout << "=== 3. Print all items that cost less than $11.00 in short form format ===" << std::endl;
+    // std::cout << "\n=== 3. Print all items that cost less than $11.00 in short form format ===" << std::endl;
+    // for(auto& item:allItems)
+    // {
+    //     if(item->getPrice() < 11)
+    //         item->displayShortForm();
+    // }
+    
+    std::cout << "\n=== 4. Print all items that were published after `2010`, and cost less than $15, and contain the word `and` in the title or summary ===" << std::endl;
     for(auto& item:allItems)
     {
-        if(item.getPrice() < 11)
-            item->displayShortForm();
-    }
-
-    std::cout << "=== 4. Print all items that were published after `2010`, and cost less than $15, and contain the word `and` in the title or summary ===" << std::endl;
-    for(auto& item:allItems)
-    {
-        if(item.getYearPublished() > 2010 && item.getPrice() < 15 && item.findQueried(allItems, "and"))
+        if(item->getYearPublished() > 2010 && item->getPrice() < 15 && item.findQueried(allItems, "and"))
             item->displayShortForm();
     }
     //std::vector<GraphicNovels> findQueried(std::vector<GraphicNovels> gNovels, std::string keyword)
     //look into how to make findQueried, alphabetize and filter latest issue part of base class 
     
+    /*
     std::cout << "=== 5. Print all items that were published before the year 1900 or cost more than $100 ===" << std::endl;
     for(auto& item:allItems)
     {
@@ -886,6 +883,25 @@ int main() {
 
     std::cout << "=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
     */
+}
+
+std::vector<BookInformation*> findQueried(std::vector<BookInformation*> allItems, std::string keyword)
+{
+        // Create a vector of type Book called 'queriedBooks' to store the Books with keyword
+    std::vector<BookInformation*> queriedItems;
+    BookInformation* temp;
+
+        // For every book, we search for the keyword in the book title and if it is found
+        // then the book is added to 'queriedBooks'
+    for(auto& item:allItems)
+    {
+        size_t found = item->getTitle().find(keyword);
+        if(found!=std::string::npos)
+            temp = &item;
+            queriedItems.push_back(item);
+    }
+        
+    return queriedItems; // Vector 'queriedBooks' is returned
 }
 
 /* Professor Comments:
