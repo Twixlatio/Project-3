@@ -43,15 +43,48 @@ public:
     std::string getEdition() const { return edition; }
     int getCopies() const { return copies; }
 
+    int setCopies(int c) { copies = c; }
+
     virtual void displayLongForm() const = 0;
     virtual void displayShortForm() const = 0;
+    virtual std::string getType() const = 0;
 
-    
+    bool findQueried(std::string string, std::string keyword)
+    {
+        size_t found = string.find(keyword);
+        if(found!=std::string::npos)
+            return true;
+        else
+            return false;
+    }
+
+    void log(std::string message)
+    {
+        // Opening the saleFile called 'sales.txt' in append mode to save the record of every sale in one program run
+        // but it is cleared out at the beginning of each program run in main()
+        std::ofstream saleFile("sales.txt", std::ios::app);
+
+        // If saleFile is open, log the sale in the format TYPE; TITLE; EDITION; ISSUE; YEAR PUBLISHED; COPIES; $PRICE
+        if(saleFile.is_open())
+        {
+            saleFile << message << std::endl;
+        }
+        saleFile.close();
+    }
 
     virtual ~BasicInformation() = default;
 };
 
-class Book : public BasicInformation
+class ISellable {
+public:
+    // getCurrentPrice returns the current price of the item
+    virtual float getCurrentPrice() const = 0;
+    // sell performs a single "sale" of an item, and returns true if the sale was successful
+    // this will return false if the sale fails due to insufficient number of items in inventory
+    virtual bool sell() = 0;
+};
+
+class Book : public ISellable, public BasicInformation
 {
 private: 
     std::string type = "Book";
@@ -62,7 +95,7 @@ public:
         author = a;
     }
 
-    std::string getType() const { return type; }
+    std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
 
     void displayLongForm() const override
@@ -91,22 +124,26 @@ public:
         return alphabetized; // The sorted vector is returned
     }
 
-    // Returns a vector array with corresponding books that have the queried keyword in its title
-    std::vector<Book> findQueried(std::vector<Book> books, std::string keyword)
+    float getCurrentPrice() const override 
     {
-        // Create a vector of type Book called 'queriedBooks' to store the Books with keyword
-        std::vector<Book> queriedBooks;
+        return getPrice();
+    }
 
-        // For every book, we search for the keyword in the book title and if it is found
-        // then the book is added to 'queriedBooks'
-        for(Book book:books)
+    bool sell() override
+    {
+        if(getCopies() > 0)
         {
-            size_t found = book.getTitle().find(keyword);
-            if(found!=std::string::npos)
-                queriedBooks.push_back(book);
+            setCopies((getCopies() - 1));
+            log(type + "; " + getTitle() + "; " + author + "; " + std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()));
+            std::cout << "SOLD: ";
+            displayShortForm();
+            return true;
         }
-        
-        return queriedBooks; // Vector 'queriedBooks' is returned
+        else
+        {
+            std::cout << "ERROR: no copies of " << getTitle() << " remaining. " << std::endl;
+            return false;
+        }
     }
 };
 
@@ -125,7 +162,7 @@ public:
         monthPublished = m;
     }
 
-    std::string getType() const { return type; }
+    std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const { return issue; }
     std::string getMonthPublished() const { return monthPublished; }
@@ -155,24 +192,6 @@ public:
         });
 
         return alphabetized; // The sorted vector is returned
-    }
-    
-    // Returns a vector array with corresponding magazines that have the queried keyword in its title
-    std::vector<Magazine> findQueried(std::vector<Magazine> mags, std::string keyword)
-    {
-        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
-        std::vector<Magazine> queriedMags;
-
-        // For every magazine, we search for the keyword in the magazine title and if it is found
-        // then the magazine is added to 'queriedMags'
-        for(Magazine mag:mags)
-        {
-            size_t found = mag.getTitle().find(keyword);
-            if(found!=std::string::npos)
-                queriedMags.push_back(mag);
-        }
-
-        return queriedMags; // Vector 'queriedMags' is returned
     }
 
     // Filters a vector of type Magazine with a specific title in a desceding order with the latest issue of that magazine displayed first 
@@ -225,7 +244,7 @@ public:
         targetAge = ta;
     }
 
-    std::string getType() const { return type; }
+    std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getTargetAge() const { return targetAge; }
 
@@ -254,24 +273,7 @@ public:
 
         return alphabetized; // The sorted vector is returned
     }
-    
-    // Returns a vector array with corresponding magazines that have the queried keyword in its title
-    std::vector<ChildrensBook> findQueried(std::vector<ChildrensBook> childrensBooks, std::string keyword)
-    {
-        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
-        std::vector<ChildrensBook> queriedCBooks;
 
-        // For every magazine, we search for the keyword in the magazine title and if it is found
-        // then the magazine is added to 'queriedMags'
-        for(ChildrensBook cbook:childrensBooks)
-        {
-            size_t found = cbook.getTitle().find(keyword);
-            if(found!=std::string::npos)
-                queriedCBooks.push_back(cbook);
-        }
-
-        return queriedCBooks; // Vector 'queriedMags' is returned
-    }
 };
 
 class PuzzlesAndGames : public BasicInformation
@@ -287,7 +289,7 @@ public:
         types = ty;
     }
 
-    std::string getType() const { return type; }
+    std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getTypes() const { return types; }
 
@@ -317,22 +319,38 @@ public:
         return alphabetized; // The sorted vector is returned
     }
     
-    // Returns a vector array with corresponding magazines that have the queried keyword in its title
-    std::vector<PuzzlesAndGames> findQueried(std::vector<PuzzlesAndGames> pAndGs, std::string keyword)
+    std::vector<PuzzlesAndGames> filterNewestEdition(std::vector<PuzzlesAndGames> magazines, std::string title)
     {
-        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
-        std::vector<PuzzlesAndGames> queriedPAndGs;
-
-        // For every magazine, we search for the keyword in the magazine title and if it is found
-        // then the magazine is added to 'queriedMags'
-        for(PuzzlesAndGames pAndG:pAndGs)
+        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+        std::vector<PuzzlesAndGames> titleMagazines;
+        for(PuzzlesAndGames magazine:magazines)
         {
-            size_t found = pAndG.getTitle().find(keyword);
-            if(found!=std::string::npos)
-                queriedPAndGs.push_back(pAndG);
+            if(magazine.getTitle() == title)
+                titleMagazines.push_back(magazine);
         }
 
-        return queriedPAndGs; // Vector 'queriedMags' is returned
+        // Creates a vector of type int to store the numbers of the magazine issues
+        std::vector<int> issues;
+        for(PuzzlesAndGames magazine:titleMagazines)
+            issues.push_back((magazine.getEdition())[0]);
+
+        // Sort the numbers from greatest to least
+        std::sort(issues.begin(), issues.end(), std::greater<int>());
+
+        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+        std::vector<PuzzlesAndGames> sortedMagazines;
+        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        for(int i = 0; i<issues.size(); i++)
+        {
+            for(PuzzlesAndGames magazine:titleMagazines)
+            {
+                if((magazine.getEdition())[0] == issues[i])
+                    sortedMagazines.push_back(magazine);
+            }
+        }
+        
+        return sortedMagazines; // Vector 'sortedMagazines' is returned
     }
 };
 
@@ -349,7 +367,7 @@ public:
         cuisineType = ct;
     }
 
-    std::string getType() const { return type; }
+    std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getCuisineType() const { return cuisineType; }
 
@@ -379,23 +397,39 @@ public:
         return alphabetized; // The sorted vector is returned
     }
     
-    // Returns a vector array with corresponding magazines that have the queried keyword in its title
-    std::vector<CookBook> findQueried(std::vector<CookBook> cookbooks, std::string keyword)
+    std::vector<CookBook> filterNewestEdition(std::vector<CookBook> magazines, std::string title)
     {
-        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
-        std::vector<CookBook> queriedCookBooks;
-
-        // For every magazine, we search for the keyword in the magazine title and if it is found
-        // then the magazine is added to 'queriedMags'
-        for(CookBook cookbook:cookbooks)
+        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+        std::vector<CookBook> titleMagazines;
+        for(CookBook magazine:magazines)
         {
-            size_t found = cookbook.getTitle().find(keyword);
-            if(found!=std::string::npos)
-                queriedCookBooks.push_back(cookbook);
+            if(magazine.getTitle() == title)
+                titleMagazines.push_back(magazine);
         }
 
-        return queriedCookBooks; // Vector 'queriedMags' is returned
-    }
+        // Creates a vector of type int to store the numbers of the magazine issues
+        std::vector<int> issues;
+        for(CookBook magazine:titleMagazines)
+            issues.push_back((magazine.getEdition())[0]);
+
+        // Sort the numbers from greatest to least
+        std::sort(issues.begin(), issues.end(), std::greater<int>());
+
+        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+        std::vector<CookBook> sortedMagazines;
+        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        for(int i = 0; i<issues.size(); i++)
+        {
+            for(CookBook magazine:titleMagazines)
+            {
+                if((magazine.getEdition())[0] == issues[i])
+                    sortedMagazines.push_back(magazine);
+            }
+        }
+        
+        return sortedMagazines; // Vector 'sortedMagazines' is returned
+    }  
 };
 
 class GraphicNovels : public BasicInformation
@@ -413,7 +447,7 @@ public:
         issue = is;
     }
 
-    std::string getType() const { return type; }
+    std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const { return issue; }
     std::string getArtStyle() const { return artStyle; }
@@ -444,25 +478,40 @@ public:
         return alphabetized; // The sorted vector is returned
     }
     
-    // Returns a vector array with corresponding magazines that have the queried keyword in its title
-    std::vector<GraphicNovels> findQueried(std::vector<GraphicNovels> gNovels, std::string keyword)
+    std::vector<GraphicNovels> filterNewestIssue(std::vector<GraphicNovels> magazines, std::string title)
     {
-        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
-        std::vector<GraphicNovels> queriedNovels;
-
-        // For every magazine, we search for the keyword in the magazine title and if it is found
-        // then the magazine is added to 'queriedMags'
-        for(GraphicNovels gNovel:gNovels)
+        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+        std::vector<GraphicNovels> titleMagazines;
+        for(GraphicNovels magazine:magazines)
         {
-            size_t found = gNovel.getTitle().find(keyword);
-            if(found!=std::string::npos)
-                queriedNovels.push_back(gNovel);
+            if(magazine.getTitle() == title)
+                titleMagazines.push_back(magazine);
         }
 
-        return queriedNovels; // Vector 'queriedMags' is returned
-    }
-};
+        // Creates a vector of type int to store the numbers of the magazine issues
+        std::vector<int> issues;
+        for(GraphicNovels magazine:titleMagazines)
+            issues.push_back(magazine.getIssue());
 
+        // Sort the numbers from greatest to least
+        std::sort(issues.begin(), issues.end(), std::greater<int>());
+
+        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+        std::vector<GraphicNovels> sortedMagazines;
+        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        for(int i = 0; i<issues.size(); i++)
+        {
+            for(GraphicNovels magazine:titleMagazines)
+            {
+                if(magazine.getIssue() == issues[i])
+                    sortedMagazines.push_back(magazine);
+            }
+        }
+        
+        return sortedMagazines; // Vector 'sortedMagazines' is returned
+    } 
+};
 // Function to read books from a CSV file into a vector of Book structs
 // update the return type if you choose to use a different container
 std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
@@ -500,6 +549,7 @@ std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
         std::getline(ss, genre, ',');
         std::getline(ss, summary, ',');
         std::getline(ss, edition, ',');
+        std::getline(ss, tmp, ',');
         copies = std::stoi(tmp);
 
         //Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Copies
@@ -767,20 +817,8 @@ std::vector<GraphicNovels> loadGraphicNovelsFromCSV(const std::string& filename,
     return graphicNovels;
 }
 
-class ISellable {
-public:
-    // getCurrentPrice returns the current price of the item
-    virtual float getCurrentPrice() const = 0;
-    // sell performs a single "sale" of an item, and returns true if the sale was successful
-    // this will return false if the sale fails due to insufficient number of items in inventory
-    virtual bool sell() = 0;
-};
-
 // Function Prototypes
-int bookSale(std::vector<Book> &books, Book book);
-int magSale(std::vector<Magazine> &mags, Magazine mag);
-void logBook(std::vector<Book> books, Book book);
-void logMag(std::vector<Magazine> mags, Magazine mag);
+void log(std::string message);
 
 int main() {
     // Every time the program is started, the data in sales.txt is cleared and the file is closed
@@ -853,55 +891,93 @@ int main() {
     //         item->displayShortForm();
     // }
     
-    std::cout << "\n=== 4. Print all items that were published after `2010`, and cost less than $15, and contain the word `and` in the title or summary ===" << std::endl;
-    for(auto& item:allItems)
-    {
-        if(item->getYearPublished() > 2010 && item->getPrice() < 15 && item.findQueried(allItems, "and"))
-            item->displayShortForm();
-    }
+    // std::cout << "\n=== 4. Print all items that were published after `2010`, and cost less than $15, and contain the word `and` in the title or summary ===" << std::endl;
+    // for(auto& item:allItems)
+    // {
+    //     if(item->getYearPublished() > 2010 && item->getPrice() < 15 && (item->findQueried(item->getTitle(), "and") || item->findQueried(item->getSummary(), "and")))
+    //         item->displayShortForm();
+    // }
+
     //std::vector<GraphicNovels> findQueried(std::vector<GraphicNovels> gNovels, std::string keyword)
     //look into how to make findQueried, alphabetize and filter latest issue part of base class 
     
-    /*
-    std::cout << "=== 5. Print all items that were published before the year 1900 or cost more than $100 ===" << std::endl;
+    // std::cout << "\n=== 5. Print all items that were published before the year 1900 or cost more than $100 ===" << std::endl;
+    // for(auto& item:allItems)
+    // {
+    //     if(item->getYearPublished() < 1900 || item->getPrice() > 100)
+    //         item->displayShortForm();
+    // }
+
+    // std::cout << "\n=== 6. Print all Books and Childrens Books that were published between the years 2018 and 2021, do not include out of stock items ===" << std::endl;
+    // for(auto& item:allItems)
+    // {
+    //     if((item->getType() == "Book" || item->getType() == "Children's Book") && (item->getYearPublished() > 2018 && item->getYearPublished() < 2021) && item->getCopies() != 0)
+    //         item->displayShortForm();
+    // }
+
+    std::cout << "\n=== 7. Print alphabetized list of all items, sorted further by latest issue/edition (for magazines/graphic novels/cookbooks/puzzle books) ===" << std::endl;
+    std::vector<BasicInformation*> alphabetizedItems;
+    // Idea to alphabetize and sort by latest issue in the magazines, graphic novels, cookboks, puzzle books first
+    // Add to a alphabetized items
+    // then loop through entirely to sort items alphabetically
+    
+    // for(Book &book:books)
+    // {
+    //     temp = &book;
+    //     alphabetizedItems.push_back(temp);
+    // }
+    // for(ChildrensBook &book:childrensBooks)
+    // {
+    //     temp = &book;
+    //     alphabetizedItems.push_back(temp);
+    // }
+    // for(PuzzlesAndGames &book:puzzlesAndGames)
+    // {
+    //     temp = &book;
+    //     alphabetizedItems.push_back(temp);
+    // }
+    // for(CookBook &book:cookBooks)
+    // {
+    //     temp = &book;
+    //     alphabetizedItems.push_back(temp);
+    // }
+    // for(GraphicNovels &novel:graphicNovels)
+    // {
+    //     temp = &novel;
+    //     alphabetizedItems.push_back(temp);
+    // }
+    // for(Magazine &mag:magazines)
+    // {
+    //     temp = &mag;
+    //     alphabetizedItems.push_back(temp);
+    // }
+
+    std::cout << "\n=== 8. Perform a single 'Sale()' of each item which was published before 1900, or cost more than $100 ===" << std::endl;
+    float totalCost = 0;
+    std::vector<BasicInformation*> sellableItems;
+
     for(auto& item:allItems)
     {
-        if(item.getYearPublished() < 1900 || item.getPrice() > 100)
-            item->displayShortForm();
+        if(item->getYearPublished() < 1900 || item->getPrice() > 100)
+            sellableItems.push_back(item);
     }
 
-    std::cout << "=== 6. Print all Books and Childrens Books that were published between the years 2018 and 2021, do not include out of stock items ===" << std::endl;
-    for(auto& item:allItems)
+    for(auto& item:sellableItems)
     {
-        if((item.getType() == "Book" || item.getType() == "Children's Book") && (item.getYearPublished() >= 2018 && item.getYearPublished() <= 2021) && item.getCopies() != 0)
-            item->displayShortForm();
+        item->displayShortForm();
     }
 
-    std::cout << "=== 7. Print alphabetized list of all items, sorted further by latest issue/edition (for magazines/graphic novels/cookbooks/puzzle books) ===" << std::endl;
+    books[0].sell();
 
-    std::cout << "=== 8. Perform a single 'Sale()' of each item which was published before 1900, or cost more than $100 ===" << std::endl;
+    // for(ISellable *item:sellableItems)
+    // {
+    //     if(item->sell())
+    //         totalCost += item->getCurrentPrice();
+    // }
 
-    std::cout << "=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
-    */
-}
+    std::cout << "\n=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
 
-std::vector<BookInformation*> findQueried(std::vector<BookInformation*> allItems, std::string keyword)
-{
-        // Create a vector of type Book called 'queriedBooks' to store the Books with keyword
-    std::vector<BookInformation*> queriedItems;
-    BookInformation* temp;
-
-        // For every book, we search for the keyword in the book title and if it is found
-        // then the book is added to 'queriedBooks'
-    for(auto& item:allItems)
-    {
-        size_t found = item->getTitle().find(keyword);
-        if(found!=std::string::npos)
-            temp = &item;
-            queriedItems.push_back(item);
-    }
-        
-    return queriedItems; // Vector 'queriedBooks' is returned
+    std::cout << "Total Cost: $" << totalCost << std::endl;
 }
 
 /* Professor Comments:
@@ -969,20 +1045,6 @@ void logBook(std::vector<Book> books, Book book)
     // saleFile is closed
     saleFile.close();
 }
-
-// Logging the sales record of magazines in a txt file called 'sales.txt'
-void logMag(std::vector<Magazine> mags, Magazine mag)
-{
-    // Opening the saleFile called 'sales.txt' in append mode to save the record of every sale in one program run
-    // but it is cleared out at the beginning of each program run in main()
-    std::ofstream saleFile("sales.txt", std::ios::app);
-
-    // If saleFile is open, log the sale in the format TYPE; TITLE; EDITION; ISSUE; YEAR PUBLISHED; COPIES; $PRICE
-    if(saleFile.is_open())
-    {
-        saleFile << "Magazine; " << mag.getTitle() << "; " << mag.getEdition() << "; " << mag.getIssue() << "; " 
-                 << mag.getYearPublished() << "; " << mag.getCopies() << "; $" << mag.getPrice() << std::endl;
-    }
-    saleFile.close();
-}
 */
+// Logging the sales record of magazines in a txt file called 'sales.txt'
+
