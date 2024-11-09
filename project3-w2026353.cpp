@@ -43,12 +43,15 @@ public:
     std::string getEdition() const { return edition; }
     int getCopies() const { return copies; }
 
+    virtual void displayLongForm() const = 0;
+    virtual void displayShortForm() const = 0;
     virtual ~BasicInformation() = default;
 };
 
 class Book : public BasicInformation
 {
 private: 
+    std::string type = "Book";
     std::string author;
 public:
     Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) : BasicInformation(i, t, y, p, pg, g, s, e, c)
@@ -56,18 +59,19 @@ public:
         author = a;
     }
 
+    std::string getType() const { return type; }
     std::string getAuthor() const { return author; }
 
-    void displayLongForm()
+    void displayLongForm() const override
     {
-        std::cout << "ID: " << getId() << " | Type: Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << getPrice() << " | Year Published: " 
+        std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << getPrice() << " | Year Published: " 
               << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() << " | Edition: " << getEdition()
               << " | Copies: " << getCopies() << std::endl;
     }
 
-    void displayShortForm()
+    void displayShortForm() const override
     {
-        std::cout << "Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
     std::vector<Book> alphabetize(std::vector<Book> books)
@@ -85,7 +89,7 @@ public:
     }
 
     // Returns a vector array with corresponding books that have the queried keyword in its title
-    std::vector<Book> findQueriedBook(std::vector<Book> books, std::string keyword)
+    std::vector<Book> findQueried(std::vector<Book> books, std::string keyword)
     {
         // Create a vector of type Book called 'queriedBooks' to store the Books with keyword
         std::vector<Book> queriedBooks;
@@ -106,6 +110,7 @@ public:
 class Magazine : public BasicInformation
 {
 private: 
+    std::string type = "Magazine";
     std::string author;
     int issue;
     std::string monthPublished;
@@ -117,21 +122,22 @@ public:
         monthPublished = m;
     }
 
+    std::string getType() const { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const { return issue; }
     std::string getMonthPublished() const { return monthPublished; }
 
-    void displayLongForm()
+    void displayLongForm() const override
     {
-        std::cout << "ID: " << getId() << " | Type: Magazine" << " | Title: " << getTitle() << " | Edition: " << getEdition() << " | Issue: " << 
+        std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Edition: " << getEdition() << " | Issue: " << 
               issue << " | Year Published: " << getYearPublished() << " | Month Published: " << monthPublished << " | Price: $" << 
               getPrice() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() 
               << " | Copies: " << getCopies() << std::endl;
     }
 
-    void displayShortForm()
+    void displayShortForm() const override
     {
-        std::cout << "Magazine; " << getTitle() << "; " << getEdition() << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << getEdition() << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
     std::vector<Magazine> alphabetize(std::vector<Magazine> mags)
@@ -149,7 +155,7 @@ public:
     }
     
     // Returns a vector array with corresponding magazines that have the queried keyword in its title
-    std::vector<Magazine> findQueriedMag(std::vector<Magazine> mags, std::string keyword)
+    std::vector<Magazine> findQueried(std::vector<Magazine> mags, std::string keyword)
     {
         // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
         std::vector<Magazine> queriedMags;
@@ -206,6 +212,7 @@ public:
 class ChildrensBook : public BasicInformation
 {
 private: 
+    std::string type = "Children's Book";
     std::string author;
     std::string targetAge;
 public:
@@ -215,53 +222,121 @@ public:
         targetAge = ta;
     }
 
+    std::string getType() const { return type; }
     std::string getAuthor() const { return author; }
     std::string getTargetAge() const { return targetAge; }
 
-    void displayLongForm()
+    void displayLongForm() const override
     {
-        std::cout << "ID: " << getId() << " | Type: Children's Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
+        std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
               getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() 
               << " | Edition: " << getEdition() << " | Target Age: " << targetAge << " | Copies: " << getCopies() << std::endl;
     }
 
-    void displayShortForm()
+    void displayShortForm() const override
     {
-        std::cout << "Children's Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
+
+    std::vector<ChildrensBook> alphabetize(std::vector<ChildrensBook> childrensBooks)
+    {
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<ChildrensBook> alphabetized = childrensBooks;
+
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const ChildrensBook& a, const ChildrensBook& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
+
+        return alphabetized; // The sorted vector is returned
+    }
+    
+    // Returns a vector array with corresponding magazines that have the queried keyword in its title
+    std::vector<ChildrensBook> findQueried(std::vector<ChildrensBook> childrensBooks, std::string keyword)
+    {
+        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
+        std::vector<ChildrensBook> queriedCBooks;
+
+        // For every magazine, we search for the keyword in the magazine title and if it is found
+        // then the magazine is added to 'queriedMags'
+        for(ChildrensBook cbook:childrensBooks)
+        {
+            size_t found = cbook.getTitle().find(keyword);
+            if(found!=std::string::npos)
+                queriedCBooks.push_back(cbook);
+        }
+
+        return queriedCBooks; // Vector 'queriedMags' is returned
     }
 };
 
 class PuzzlesAndGames : public BasicInformation
 {
 private: 
+    std::string type = "Puzzle/Game Book";
     std::string author;
-    std::string type;
+    std::string types;
 public:
     PuzzlesAndGames(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ty) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
-        type = ty;
+        types = ty;
     }
 
-    std::string getAuthor() const { return author; }
     std::string getType() const { return type; }
+    std::string getAuthor() const { return author; }
+    std::string getTypes() const { return types; }
 
-    void displayLongForm()
+    void displayLongForm() const override
     {
-        std::cout << "ID: " << getId() << " | Type: Puzzle/Game Book" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
+        std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
               getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Type: " 
-              << type << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
+              << types << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
     }
 
-    void displayShortForm()
+    void displayShortForm() const override
     {
-        std::cout << "Puzzle/Game Book; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
+
+    std::vector<PuzzlesAndGames> alphabetize(std::vector<PuzzlesAndGames> pAndGs)
+    {
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<PuzzlesAndGames> alphabetized = pAndGs;
+
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const PuzzlesAndGames& a, const PuzzlesAndGames& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
+
+        return alphabetized; // The sorted vector is returned
+    }
+    
+    // Returns a vector array with corresponding magazines that have the queried keyword in its title
+    std::vector<PuzzlesAndGames> findQueried(std::vector<PuzzlesAndGames> pAndGs, std::string keyword)
+    {
+        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
+        std::vector<PuzzlesAndGames> queriedPAndGs;
+
+        // For every magazine, we search for the keyword in the magazine title and if it is found
+        // then the magazine is added to 'queriedMags'
+        for(PuzzlesAndGames pAndG:pAndGs)
+        {
+            size_t found = pAndG.getTitle().find(keyword);
+            if(found!=std::string::npos)
+                queriedPAndGs.push_back(pAndG);
+        }
+
+        return queriedPAndGs; // Vector 'queriedMags' is returned
     }
 };
 
 class CookBook : public BasicInformation
 {
 private: 
+    std::string type = "Cookbook";
     std::string author;
     std::string cuisineType;
 public:
@@ -271,25 +346,59 @@ public:
         cuisineType = ct;
     }
 
+    std::string getType() const { return type; }
     std::string getAuthor() const { return author; }
     std::string getCuisineType() const { return cuisineType; }
 
-    void displayLongForm()
+    void displayLongForm() const override
     {
-        std::cout << "ID: " << getId() << " | Type: Cookbook" << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
+        std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
               getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Cuisine Type: " 
               << cuisineType << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
     }
 
-    void displayShortForm()
+    void displayShortForm() const override
     {
-        std::cout << "Cookbook; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
+
+    std::vector<CookBook> alphabetize(std::vector<CookBook> cookbooks)
+    {
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<CookBook> alphabetized = cookbooks;
+
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const CookBook& a, const CookBook& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
+
+        return alphabetized; // The sorted vector is returned
+    }
+    
+    // Returns a vector array with corresponding magazines that have the queried keyword in its title
+    std::vector<CookBook> findQueried(std::vector<CookBook> cookbooks, std::string keyword)
+    {
+        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
+        std::vector<CookBook> queriedCookBooks;
+
+        // For every magazine, we search for the keyword in the magazine title and if it is found
+        // then the magazine is added to 'queriedMags'
+        for(CookBook cookbook:cookbooks)
+        {
+            size_t found = cookbook.getTitle().find(keyword);
+            if(found!=std::string::npos)
+                queriedCookBooks.push_back(cookbook);
+        }
+
+        return queriedCookBooks; // Vector 'queriedMags' is returned
     }
 };
 
 class GraphicNovels : public BasicInformation
 {
 private: 
+    std::string type = "Graphic Novel";
     std::string author;
     std::string artStyle;
     int issue;
@@ -301,20 +410,53 @@ public:
         issue = is;
     }
 
+    std::string getType() const { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const { return issue; }
     std::string getArtStyle() const { return artStyle; }
 
-    void displayLongForm()
+    void displayLongForm() const override
     {
-        std::cout << "ID: " << getId() << " | Type: Graphic Novel" << " | Title: " << getTitle() << " | Author/Illustrator: " << author << " | Price: $" << 
+        std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author/Illustrator: " << author << " | Price: $" << 
               getPrice() << " | Year Published: " << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Art Style: " 
               << artStyle << " | Summary: " << getSummary() << " | Edition: " << getEdition() << " | Copies: " << getCopies() << std::endl;
     }
 
-    void displayShortForm()
+    void displayShortForm() const override
     {
-        std::cout << "Graphic Novel; " << getTitle() << "; " << author << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << author << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+    }
+
+    std::vector<GraphicNovels> alphabetize(std::vector<GraphicNovels> gNovels)
+    {
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<GraphicNovels> alphabetized = gNovels;
+
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const GraphicNovels& a, const GraphicNovels& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
+
+        return alphabetized; // The sorted vector is returned
+    }
+    
+    // Returns a vector array with corresponding magazines that have the queried keyword in its title
+    std::vector<GraphicNovels> findQueried(std::vector<GraphicNovels> gNovels, std::string keyword)
+    {
+        // Create a vector of type Magazine called 'queriedMags' to store the Magazines with keyword
+        std::vector<GraphicNovels> queriedNovels;
+
+        // For every magazine, we search for the keyword in the magazine title and if it is found
+        // then the magazine is added to 'queriedMags'
+        for(GraphicNovels gNovel:gNovels)
+        {
+            size_t found = gNovel.getTitle().find(keyword);
+            if(found!=std::string::npos)
+                queriedNovels.push_back(gNovel);
+        }
+
+        return queriedNovels; // Vector 'queriedMags' is returned
     }
 };
 
@@ -662,16 +804,88 @@ int main() {
     ID = graphicNovels.size();
     std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
 
-    std::vector<BasicInformation> allItems;
-    allItems.insert(allItems.end(), books.begin(), books.end());
-    allItems.insert(allItems.end(), childrensBooks.begin(), childrensBooks.end());
-    allItems.insert(allItems.end(), puzzlesAndGames.begin(), puzzlesAndGames.end());
-    allItems.insert(allItems.end(), cookBooks.begin(), cookBooks.end());
-    allItems.insert(allItems.end(), graphicNovels.begin(), graphicNovels.end());
-    allItems.insert(allItems.end(), magazines.begin(), magazines.end());
+    std::vector<BasicInformation*> allItems;
+    BasicInformation* temp;
+    
+    for(Book &book:books)
+    {
+        temp = &book;
+        allItems.push_back(temp);
+    }
 
+    for(ChildrensBook &book:childrensBooks)
+    {
+        temp = &book;
+        allItems.push_back(temp);
+    }
+
+    for(PuzzlesAndGames &book:puzzlesAndGames)
+    {
+        temp = &book;
+        allItems.push_back(temp);
+    }
+
+    for(CookBook &book:cookBooks)
+    {
+        temp = &book;
+        allItems.push_back(temp);
+    }
+
+    for(GraphicNovels &novel:graphicNovels)
+    {
+        temp = &novel;
+        allItems.push_back(temp);
+    }
+
+    for(Magazine &mag:magazines)
+    {
+        temp = &mag;
+        allItems.push_back(temp);
+    }
+
+    std::cout << "=== 2. Print full info for all items using a single std container to demonstrate polymorphism ===" << std::endl;
+    for(BasicInformation* item:allItems)
+    {
+        item->displayShortForm();
+    }
+
+    /*
+    std::cout << "=== 3. Print all items that cost less than $11.00 in short form format ===" << std::endl;
     for(auto& item:allItems)
-        item.displayShortForm();
+    {
+        if(item.getPrice() < 11)
+            item->displayShortForm();
+    }
+
+    std::cout << "=== 4. Print all items that were published after `2010`, and cost less than $15, and contain the word `and` in the title or summary ===" << std::endl;
+    for(auto& item:allItems)
+    {
+        if(item.getYearPublished() > 2010 && item.getPrice() < 15 && item.findQueried(allItems, "and"))
+            item->displayShortForm();
+    }
+    //std::vector<GraphicNovels> findQueried(std::vector<GraphicNovels> gNovels, std::string keyword)
+    //look into how to make findQueried, alphabetize and filter latest issue part of base class 
+    
+    std::cout << "=== 5. Print all items that were published before the year 1900 or cost more than $100 ===" << std::endl;
+    for(auto& item:allItems)
+    {
+        if(item.getYearPublished() < 1900 || item.getPrice() > 100)
+            item->displayShortForm();
+    }
+
+    std::cout << "=== 6. Print all Books and Childrens Books that were published between the years 2018 and 2021, do not include out of stock items ===" << std::endl;
+    for(auto& item:allItems)
+    {
+        if((item.getType() == "Book" || item.getType() == "Children's Book") && (item.getYearPublished() >= 2018 && item.getYearPublished() <= 2021) && item.getCopies() != 0)
+            item->displayShortForm();
+    }
+
+    std::cout << "=== 7. Print alphabetized list of all items, sorted further by latest issue/edition (for magazines/graphic novels/cookbooks/puzzle books) ===" << std::endl;
+
+    std::cout << "=== 8. Perform a single 'Sale()' of each item which was published before 1900, or cost more than $100 ===" << std::endl;
+
+    std::cout << "=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
+    */
 }
 
 /* Professor Comments:
@@ -683,7 +897,7 @@ a reference "Magazine &mag" and changing your "for" iterator in main() on line 3
 
 /*
 // Performing sale of book if there is atleast one copy of that book
-int bookSale(std::vector<Book> &books, Book book)
+int bookSale(std::vector<Book> &books, Book &book)
 {
     // If there is atleast one copy of the book the number of copies of that book is subtracted by 1, 
     // the logBook() function is called, and display a confirmation message that the book is sold. If it can't be sold 
@@ -703,7 +917,7 @@ int bookSale(std::vector<Book> &books, Book book)
 }
 
 // Performing sale of magazine if there is atleast one copy of that book
-int magSale(std::vector<Magazine> &mags, Magazine mag)
+int magSale(std::vector<Magazine> &mags, Magazine &mag)
 {
     // If there is atleast one copy of the magazine the number of copies of that magazine is subtracted by 1, 
     // the logMag() function is called, and display a confirmation message that the magazine is sold. If it can't be sold 
