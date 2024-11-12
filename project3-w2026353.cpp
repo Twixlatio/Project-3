@@ -1,9 +1,11 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 // Overview:
 // Books: id, Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Copies
@@ -36,7 +38,7 @@ public:
     int getId() const { return id; }
     std::string getTitle() const { return title; }
     int getYearPublished() const { return yearPublished; }
-    float getPrice() const { return price; }
+    float getPrice() const { return round(price * 100) / 100; }
     int getPageCount() const { return pageCount; }
     std::string getGenre() const { return genre; }
     std::string getSummary() const { return summary; }
@@ -67,7 +69,7 @@ public:
         // If saleFile is open, log the sale in the format TYPE; TITLE; EDITION; ISSUE; YEAR PUBLISHED; COPIES; $PRICE
         if(saleFile.is_open())
         {
-            saleFile << message << std::endl;
+            saleFile << message << getPrice() << std::endl;
         }
         saleFile.close();
     }
@@ -134,7 +136,7 @@ public:
         if(getCopies() > 0)
         {
             setCopies((getCopies() - 1));
-            log(type + "; " + getTitle() + "; " + author + "; " + std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()));
+            log(type + "; " + getTitle() + "; " + author + "; " + std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()) + "; $");
             std::cout << "SOLD: ";
             displayShortForm();
             return true;
@@ -147,7 +149,7 @@ public:
     }
 };
 
-class Magazine : public BasicInformation
+class Magazine : public ISellable, public BasicInformation
 {
 private: 
     std::string type = "Magazine";
@@ -229,9 +231,31 @@ public:
         
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     }
+
+    float getCurrentPrice() const override 
+    {
+        return getPrice();
+    }
+
+    bool sell() override
+    {
+        if(getCopies() > 0)
+        {
+            setCopies((getCopies() - 1));
+            log(type + "; " + getTitle() + "; " + getEdition() + "; " + std::to_string(issue) + "; " +  std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()) + "; $");
+            std::cout << "SOLD: ";
+            displayShortForm();
+            return true;
+        }
+        else
+        {
+            std::cout << "ERROR: no copies of " << getTitle() << " remaining. " << std::endl;
+            return false;
+        }
+    }
 };
 
-class ChildrensBook : public BasicInformation
+class ChildrensBook : public ISellable, public BasicInformation
 {
 private: 
     std::string type = "Children's Book";
@@ -274,9 +298,30 @@ public:
         return alphabetized; // The sorted vector is returned
     }
 
+    float getCurrentPrice() const override 
+    {
+        return getPrice();
+    }
+
+    bool sell() override
+    {
+        if(getCopies() > 0)
+        {
+            setCopies((getCopies() - 1));
+            log(type + "; " + getTitle() + "; " + author + "; " + std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()) + "; $");
+            std::cout << "SOLD: ";
+            displayShortForm();
+            return true;
+        }
+        else
+        {
+            std::cout << "ERROR: no copies of " << getTitle() << " remaining. " << std::endl;
+            return false;
+        }
+    }
 };
 
-class PuzzlesAndGames : public BasicInformation
+class PuzzlesAndGames : public ISellable, public BasicInformation
 {
 private: 
     std::string type = "Puzzle/Game Book";
@@ -302,7 +347,7 @@ public:
 
     void displayShortForm() const override
     {
-        std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << getEdition() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
     std::vector<PuzzlesAndGames> alphabetize(std::vector<PuzzlesAndGames> pAndGs)
@@ -352,9 +397,31 @@ public:
         
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     }
+
+    float getCurrentPrice() const override 
+    {
+        return getPrice();
+    }
+
+    bool sell() override
+    {
+        if(getCopies() > 0)
+        {
+            setCopies((getCopies() - 1));
+            log(type + "; " + getTitle() + "; " + getEdition() + "; " + author + "; " +  std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()) + "; $");
+            std::cout << "SOLD: ";
+            displayShortForm();
+            return true;
+        }
+        else
+        {
+            std::cout << "ERROR: no copies of " << getTitle() << " remaining. " << std::endl;
+            return false;
+        }
+    }
 };
 
-class CookBook : public BasicInformation
+class CookBook : public ISellable, public BasicInformation
 {
 private: 
     std::string type = "Cookbook";
@@ -380,7 +447,7 @@ public:
 
     void displayShortForm() const override
     {
-        std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
+        std::cout << type << "; " << getTitle() << "; " << author << "; " << getEdition() << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
     std::vector<CookBook> alphabetize(std::vector<CookBook> cookbooks)
@@ -430,9 +497,31 @@ public:
         
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     }  
+
+    float getCurrentPrice() const override 
+    {
+        return getPrice();
+    }
+
+    bool sell() override
+    {
+        if(getCopies() > 0)
+        {
+            setCopies((getCopies() - 1));
+            log(type + "; " + getTitle() + "; " + author + "; " + getEdition() + "; " +  std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()) + "; $");
+            std::cout << "SOLD: ";
+            displayShortForm();
+            return true;
+        }
+        else
+        {
+            std::cout << "ERROR: no copies of " << getTitle() << " remaining. " << std::endl;
+            return false;
+        }
+    }
 };
 
-class GraphicNovels : public BasicInformation
+class GraphicNovels : public ISellable, public BasicInformation
 {
 private: 
     std::string type = "Graphic Novel";
@@ -511,6 +600,28 @@ public:
         
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     } 
+
+    float getCurrentPrice() const override 
+    {
+        return getPrice();
+    }
+
+    bool sell() override
+    {
+        if(getCopies() > 0)
+        {
+            setCopies((getCopies() - 1));
+            log(type + "; " + getTitle() + "; " + author + "; " + std::to_string(issue) + "; " +  std::to_string(getYearPublished()) + "; " + std::to_string(getCopies()) + "; $");
+            std::cout << "SOLD: ";
+            displayShortForm();
+            return true;
+        }
+        else
+        {
+            std::cout << "ERROR: no copies of " << getTitle() << " remaining. " << std::endl;
+            return false;
+        }
+    }
 };
 // Function to read books from a CSV file into a vector of Book structs
 // update the return type if you choose to use a different container
@@ -962,18 +1073,16 @@ int main() {
             sellableItems.push_back(item);
     }
 
-    for(auto& item:sellableItems)
-    {
-        item->displayShortForm();
-    }
-
-    books[0].sell();
-
-    // for(ISellable *item:sellableItems)
+    // for(auto& item:sellableItems)
     // {
-    //     if(item->sell())
-    //         totalCost += item->getCurrentPrice();
+    //     item->displayShortForm();
     // }
+
+    for(ISellable *item:sellableItems)
+    {
+        if(item->sell())
+            totalCost += item->getCurrentPrice();
+    }
 
     std::cout << "\n=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
 
