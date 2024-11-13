@@ -15,8 +15,17 @@
 // Magazines: id, Title,Edition,Issue,Year Published,Month Published,Price,Page Count,Genre,Summary,Copies
 // Puzzles & Games: id, Title,Author,Price,Year Published,Pagecount,Genre,Type,Summary,Edition,Copies
 
+class ISellable {
+public:
+    // getCurrentPrice returns the current price of the item
+    virtual float getCurrentPrice() const = 0;
+    // sell performs a single "sale" of an item, and returns true if the sale was successful
+    // this will return false if the sale fails due to insufficient number of items in inventory
+    virtual bool sell() = 0;
+};
+
 // Base class basicInformation
-class BasicInformation
+class BasicInformation : public ISellable
 {
 private:
     int id; 
@@ -74,19 +83,36 @@ public:
         saleFile.close();
     }
 
+    float getCurrentPrice() const override 
+    {
+        return getPrice();
+    }
+
+    bool sell() override
+    {
+        std::cout << "Wrong method";
+        return false;
+    }
+
+    std::vector<BasicInformation*> alphabetize(std::vector<BasicInformation*> books)
+    {
+        // Create a temporary vector 'alphabetized' to store the sorted books
+        std::vector<BasicInformation*> alphabetized = books;
+
+        // Use std::sort to sort the 'alphabetized' vector by the title field
+        // use a lambda function for the std::sort comparator, compare object titles directly.
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const BasicInformation*& a, const BasicInformation*& b) {
+            return a.getTitle() < b.getTitle(); // Compare books by title
+        });
+
+        return alphabetized; // The sorted vector is returned
+    }
+
     virtual ~BasicInformation() = default;
 };
 
-class ISellable {
-public:
-    // getCurrentPrice returns the current price of the item
-    virtual float getCurrentPrice() const = 0;
-    // sell performs a single "sale" of an item, and returns true if the sale was successful
-    // this will return false if the sale fails due to insufficient number of items in inventory
-    virtual bool sell() = 0;
-};
 
-class Book : public ISellable, public BasicInformation
+class Book : public BasicInformation
 {
 private: 
     std::string type = "Book";
@@ -149,7 +175,7 @@ public:
     }
 };
 
-class Magazine : public ISellable, public BasicInformation
+class Magazine : public BasicInformation
 {
 private: 
     std::string type = "Magazine";
@@ -232,6 +258,38 @@ public:
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     }
 
+    std::vector<Magazine> alphaAndFilter(std::vector<Magazine> magazines)
+    {
+        std::vector<Magazine> alphabetizedFullMags = alphabetize(magazines);
+
+        // Store every unique title of the magazines in alphabetizedFullMags
+        std::vector<std::string> titles;
+        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(Magazine mag:alphabetizedFullMags)
+        {
+            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+            // the mag title then loop 
+            if(mag.getTitle() != currentTitle)
+            {
+                titles.push_back(mag.getTitle());
+                currentTitle = mag.getTitle();
+            }
+        }
+
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+        // information of the magazine and loop
+        std::vector<Magazine> alphabetizedAndLatest;
+        std::vector<Magazine> returned;
+        for(std::string t:titles)
+        {
+            alphabetizedAndLatest = filterNewestIssue(magazines, t);
+            for(Magazine mag:alphabetizedAndLatest)
+                returned.push_back(mag);
+        }
+        return returned;
+    }
+
     float getCurrentPrice() const override 
     {
         return getPrice();
@@ -255,7 +313,7 @@ public:
     }
 };
 
-class ChildrensBook : public ISellable, public BasicInformation
+class ChildrensBook : public BasicInformation
 {
 private: 
     std::string type = "Children's Book";
@@ -321,7 +379,7 @@ public:
     }
 };
 
-class PuzzlesAndGames : public ISellable, public BasicInformation
+class PuzzlesAndGames : public BasicInformation
 {
 private: 
     std::string type = "Puzzle/Game Book";
@@ -398,6 +456,38 @@ public:
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     }
 
+    std::vector<PuzzlesAndGames> alphaAndFilter(std::vector<PuzzlesAndGames> magazines)
+    {
+        std::vector<PuzzlesAndGames> alphabetizedFullMags = alphabetize(magazines);
+
+        // Store every unique title of the magazines in alphabetizedFullMags
+        std::vector<std::string> titles;
+        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(PuzzlesAndGames mag:alphabetizedFullMags)
+        {
+            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+            // the mag title then loop 
+            if(mag.getTitle() != currentTitle)
+            {
+                titles.push_back(mag.getTitle());
+                currentTitle = mag.getTitle();
+            }
+        }
+
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+        // information of the magazine and loop
+        std::vector<PuzzlesAndGames> alphabetizedAndLatest;
+        std::vector<PuzzlesAndGames> returned;
+        for(std::string t:titles)
+        {
+            alphabetizedAndLatest = filterNewestEdition(magazines, t);
+            for(PuzzlesAndGames mag:alphabetizedAndLatest)
+                returned.push_back(mag);
+        }
+        return returned;
+    }
+
     float getCurrentPrice() const override 
     {
         return getPrice();
@@ -421,7 +511,7 @@ public:
     }
 };
 
-class CookBook : public ISellable, public BasicInformation
+class CookBook : public BasicInformation
 {
 private: 
     std::string type = "Cookbook";
@@ -498,6 +588,38 @@ public:
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     }  
 
+    std::vector<CookBook> alphaAndFilter(std::vector<CookBook> magazines)
+    {
+        std::vector<CookBook> alphabetizedFullMags = alphabetize(magazines);
+
+        // Store every unique title of the magazines in alphabetizedFullMags
+        std::vector<std::string> titles;
+        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(CookBook mag:alphabetizedFullMags)
+        {
+            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+            // the mag title then loop 
+            if(mag.getTitle() != currentTitle)
+            {
+                titles.push_back(mag.getTitle());
+                currentTitle = mag.getTitle();
+            }
+        }
+
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+        // information of the magazine and loop
+        std::vector<CookBook> alphabetizedAndLatest;
+        std::vector<CookBook> returned;
+        for(std::string t:titles)
+        {
+            alphabetizedAndLatest = filterNewestEdition(magazines, t);
+            for(CookBook mag:alphabetizedAndLatest)
+                returned.push_back(mag);
+        }
+        return returned;
+    }
+
     float getCurrentPrice() const override 
     {
         return getPrice();
@@ -521,7 +643,7 @@ public:
     }
 };
 
-class GraphicNovels : public ISellable, public BasicInformation
+class GraphicNovels : public BasicInformation
 {
 private: 
     std::string type = "Graphic Novel";
@@ -600,6 +722,38 @@ public:
         
         return sortedMagazines; // Vector 'sortedMagazines' is returned
     } 
+
+    std::vector<GraphicNovels> alphaAndFilter(std::vector<GraphicNovels> magazines)
+    {
+        std::vector<GraphicNovels> alphabetizedFullMags = alphabetize(magazines);
+
+        // Store every unique title of the magazines in alphabetizedFullMags
+        std::vector<std::string> titles;
+        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(GraphicNovels mag:alphabetizedFullMags)
+        {
+            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+            // the mag title then loop 
+            if(mag.getTitle() != currentTitle)
+            {
+                titles.push_back(mag.getTitle());
+                currentTitle = mag.getTitle();
+            }
+        }
+
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+        // information of the magazine and loop
+        std::vector<GraphicNovels> alphabetizedAndLatest;
+        std::vector<GraphicNovels> returned;
+        for(std::string t:titles)
+        {
+            alphabetizedAndLatest = filterNewestIssue(magazines, t);
+            for(GraphicNovels mag:alphabetizedAndLatest)
+                returned.push_back(mag);
+        }
+        return returned;
+    }
 
     float getCurrentPrice() const override 
     {
@@ -1028,132 +1182,71 @@ int main() {
 
     std::cout << "\n=== 7. Print alphabetized list of all items, sorted further by latest issue/edition (for magazines/graphic novels/cookbooks/puzzle books) ===" << std::endl;
     std::vector<BasicInformation*> alphabetizedItems;
-    // Idea to alphabetize and sort by latest issue in the magazines, graphic novels, cookboks, puzzle books first
-    // Add to a alphabetized items
-    // then loop through entirely to sort items alphabetically
     
-    // for(Book &book:books)
-    // {
-    //     temp = &book;
-    //     alphabetizedItems.push_back(temp);
-    // }
-    // for(ChildrensBook &book:childrensBooks)
-    // {
-    //     temp = &book;
-    //     alphabetizedItems.push_back(temp);
-    // }
-    // for(PuzzlesAndGames &book:puzzlesAndGames)
-    // {
-    //     temp = &book;
-    //     alphabetizedItems.push_back(temp);
-    // }
-    // for(CookBook &book:cookBooks)
-    // {
-    //     temp = &book;
-    //     alphabetizedItems.push_back(temp);
-    // }
-    // for(GraphicNovels &novel:graphicNovels)
-    // {
-    //     temp = &novel;
-    //     alphabetizedItems.push_back(temp);
-    // }
-    // for(Magazine &mag:magazines)
-    // {
-    //     temp = &mag;
-    //     alphabetizedItems.push_back(temp);
-    // }
-
-    std::cout << "\n=== 8. Perform a single 'Sale()' of each item which was published before 1900, or cost more than $100 ===" << std::endl;
-    float totalCost = 0;
-    std::vector<BasicInformation*> sellableItems;
-
-    for(auto& item:allItems)
+    books = books[0].alphabetize(books);
+    for(Book &book:books)
     {
-        if(item->getYearPublished() < 1900 || item->getPrice() > 100)
-            sellableItems.push_back(item);
+        temp = &book;
+        alphabetizedItems.push_back(temp);
+    }
+    childrensBooks = childrensBooks[0].alphabetize(childrensBooks);
+    for(ChildrensBook &book:childrensBooks)
+    {
+        temp = &book;
+        alphabetizedItems.push_back(temp);
+    }
+    puzzlesAndGames = puzzlesAndGames[0].alphaAndFilter(puzzlesAndGames);
+    for(PuzzlesAndGames &book:puzzlesAndGames)
+    {
+        temp = &book;
+        alphabetizedItems.push_back(temp);
+    }
+    cookBooks = cookBooks[0].alphaAndFilter(cookBooks);
+    for(CookBook &book:cookBooks)
+    {
+        temp = &book;
+        alphabetizedItems.push_back(temp);
+    }
+    graphicNovels = graphicNovels[0].alphaAndFilter(graphicNovels);
+    for(GraphicNovels &novel:graphicNovels)
+    {
+        temp = &novel;
+        alphabetizedItems.push_back(temp);
+    }
+    magazines = magazines[0].alphaAndFilter(magazines);
+    for(Magazine &mag:magazines)
+    {
+        temp = &mag;
+        alphabetizedItems.push_back(temp);
     }
 
-    // for(auto& item:sellableItems)
-    // {
-    //     item->displayShortForm();
-    // }
-
-    for(ISellable *item:sellableItems)
+    alphabetizedItems = alphabetizedItems[0].alphabetize(alphabetizedItems);
+    for(auto* item:alphabetizedItems)
     {
-        if(item->sell())
-            totalCost += item->getCurrentPrice();
+        item->displayShortForm();
     }
 
-    std::cout << "\n=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
+    // std::cout << "\n=== 8. Perform a single 'Sale()' of each item which was published before 1900, or cost more than $100 ===" << std::endl;
+    // float totalCost = 0;
+    // std::vector<BasicInformation*> sellableItems;
 
-    std::cout << "Total Cost: $" << totalCost << std::endl;
+    // for(auto& item:allItems)
+    // {
+    //     if(item->getYearPublished() < 1900 || item->getPrice() > 100)
+    //         sellableItems.push_back(item);
+    // }
+
+    // for(ISellable *item:sellableItems)
+    // {
+    //     item->sell();
+    // }
+
+    // std::cout << "\n=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
+    // for(ISellable *item:allItems)
+    // {
+    //     if(item->sell())
+    //         totalCost += item->getCurrentPrice();
+    // }
+
+    // std::cout << "Total Cost: $" << totalCost << std::endl;
 }
-
-/* Professor Comments:
-due to a mistake in magSale() on line 562 where you subtract 1 from the number of copies for the magazines, 
-except you are operating on a *copy* of the magazine object instead of a reference, updating line 555 to use
-a reference "Magazine &mag" and changing your "for" iterator in main() on line 320 to operate on references: 
-"for(Magazine &magazine:magazines)" fixes the bug. you have an identical issue with bookSale()
-*/
-
-/*
-// Performing sale of book if there is atleast one copy of that book
-int bookSale(std::vector<Book> &books, Book &book)
-{
-    // If there is atleast one copy of the book the number of copies of that book is subtracted by 1, 
-    // the logBook() function is called, and display a confirmation message that the book is sold. If it can't be sold 
-    // and error message is displayed and exit.
-    if(book.copies > 0)
-    {
-        book.copies -= 1;
-        logBook(books, book);
-        std::cout << "SOLD: " << "Book; " << book.title << "; " << book.author << "; " << book.yearPublished << "; " << book.copies << std::endl;
-    }
-    else
-    {
-        std::cout << "ERROR: 0 copies of Book; " << book.title << "; " << book.author << "; " << book.yearPublished << "; " << book.copies << " available" << std::endl;
-        return -1;
-    }
-    return -1;
-}
-
-// Performing sale of magazine if there is atleast one copy of that book
-int magSale(std::vector<Magazine> &mags, Magazine &mag)
-{
-    // If there is atleast one copy of the magazine the number of copies of that magazine is subtracted by 1, 
-    // the logMag() function is called, and display a confirmation message that the magazine is sold. If it can't be sold 
-    // and error message is displayed and exit.
-    if(mag.getCopies() > 0)
-    {
-        mag.setCopies((mag.getCopies() - 1));
-        logMag(mags, mag);
-        std::cout << "SOLD: " << "Magazine; " << mag.getTitle() << "; " << mag.getEdition() << "; " << mag.getIssue() << "; " 
-                  << mag.getYearPublished() << "; " << mag.getCopies() << std::endl;
-    }
-    else
-    {
-        std::cout << "ERROR: 0 copies of Magazine; " << mag.getTitle() << "; " << mag.getEdition() << "; " << mag.getIssue() << "; " 
-                  << mag.getYearPublished() << "; " << mag.getCopies() << " available" << std::endl;
-        return -1;
-    }
-    return -1;
-}
-
-// Logging the sales record of books in a txt file called 'sales.txt'
-void logBook(std::vector<Book> books, Book book)
-{
-    // Opening the saleFile called 'sales.txt' in append mode to save the record of every sale in one program run
-    // but it is cleared out at the beginning of each program run in main()
-    std::ofstream saleFile("sales.txt", std::ios::app);
-
-    // If saleFile is open, log the sale in the format TYPE; TITLE; AUTHOR; YEAR PUBLISHED; COPIES; $PRICE
-    if(saleFile.is_open())
-    {
-        saleFile << "Book; " << book.title << "; " << book.author << "; " << book.yearPublished << "; " << book.copies << "; $" << book.price << std::endl;
-    }
-    // saleFile is closed
-    saleFile.close();
-}
-*/
-// Logging the sales record of magazines in a txt file called 'sales.txt'
-
