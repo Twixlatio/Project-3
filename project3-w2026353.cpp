@@ -6,14 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
-
-// Overview:
-// Books: id, Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Copies
-// Children's books: id, Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Target Age,Copies
-// Cook books: id, Title,Author,Price,Year Published,Pagecount,Genre,Cuisine Type,Summary,Edition,Copies
-// Graphic novels: id, Title,Author/Illustrator,Price,Year Published,Pagecount,Genre,Art Style,Summary,Issue,Edition,Copies
-// Magazines: id, Title,Edition,Issue,Year Published,Month Published,Price,Page Count,Genre,Summary,Copies
-// Puzzles & Games: id, Title,Author,Price,Year Published,Pagecount,Genre,Type,Summary,Edition,Copies
+#include <typeinfo>
 
 class ISellable {
 public:
@@ -53,8 +46,9 @@ public:
     std::string getSummary() const { return summary; }
     std::string getEdition() const { return edition; }
     int getCopies() const { return copies; }
+    virtual int getIssue() const = 0;
 
-    int setCopies(int c) { copies = c; }
+    void setCopies(int c) { copies = c; }
 
     virtual void displayLongForm() const = 0;
     virtual void displayShortForm() const = 0;
@@ -108,6 +102,143 @@ public:
         return alphabetized; // The sorted vector is returned
     }
 
+    static std::vector<BasicInformation*> filterNewestIssue(std::vector<BasicInformation*> magazines, std::string title)
+    {
+        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+        std::vector<BasicInformation*> titleMagazines;
+        for(BasicInformation* magazine:magazines)
+        {
+            if(magazine->getTitle() == title)
+                titleMagazines.push_back(magazine);
+        }
+
+        // Creates a vector of type int to store the numbers of the magazine issues
+        std::vector<int> issues;
+        for(BasicInformation* magazine:titleMagazines)
+        {
+            issues.push_back(magazine->getIssue());
+        }
+
+        // Sort the numbers from greatest to least
+        std::sort(issues.begin(), issues.end(), std::greater<int>());
+
+        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+        std::vector<BasicInformation*> sortedMagazines;
+        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        for(int i = 0; i<issues.size(); i++)
+        {
+            for(BasicInformation* magazine:titleMagazines)
+            {
+                if(magazine->getIssue() == issues[i])
+                    sortedMagazines.push_back(magazine);
+            }
+        }
+        
+        return sortedMagazines; // Vector 'sortedMagazines' is returned
+    }
+
+    static std::vector<BasicInformation*> filterNewestEdition(std::vector<BasicInformation*> magazines, std::string title)
+    {
+        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+        std::vector<BasicInformation*> titleMagazines;
+        for(BasicInformation* magazine:magazines)
+        {
+            if(magazine->getTitle() == title)
+                titleMagazines.push_back(magazine);
+        }
+
+        // Creates a vector of type int to store the numbers of the magazine issues
+        std::vector<int> issues;
+        std::vector<BasicInformation*> magazinesWithNoValidEdition;
+        for(BasicInformation* magazine:titleMagazines)
+        {
+            issues.push_back((magazine->getEdition())[0]);
+        }
+        
+        // Sort the numbers from greatest to least
+        std::sort(issues.begin(), issues.end(), std::greater<int>());
+
+        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+        std::vector<BasicInformation*> sortedMagazines;
+        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        for(int i = 0; i<issues.size(); i++)
+        {
+            for(BasicInformation* magazine:titleMagazines)
+            {
+                if((magazine->getEdition())[0] == issues[i])
+                    sortedMagazines.push_back(magazine);
+            }
+        }
+        
+        return sortedMagazines; // Vector 'sortedMagazines' is returned
+    }
+
+    static std::vector<BasicInformation*> alphaAndFilterIssue(std::vector<BasicInformation*> magazines)
+    {
+        std::vector<BasicInformation*> alphabetizedFullMags = alphabetize(magazines);
+
+        // Store every unique title of the magazines in alphabetizedFullMags
+        std::vector<std::string> titles;
+        titles.push_back(alphabetizedFullMags[0]->getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMags[0]->getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(BasicInformation* mag:alphabetizedFullMags)
+        {
+            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+            // the mag title then loop 
+            if(mag->getTitle() != currentTitle)
+            {
+                titles.push_back(mag->getTitle());
+                currentTitle = mag->getTitle();
+            }
+        }
+
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+        // information of the magazine and loop
+        std::vector<BasicInformation*> alphabetizedAndLatest;
+        std::vector<BasicInformation*> returned;
+        for(std::string t:titles)
+        {
+            alphabetizedAndLatest = filterNewestIssue(magazines, t);
+            for(BasicInformation* mag:alphabetizedAndLatest)
+                returned.push_back(mag);
+        }
+        return returned;
+    }
+
+    static std::vector<BasicInformation*> alphaAndFilterEdition(std::vector<BasicInformation*> magazines)
+    {
+        std::vector<BasicInformation*> alphabetizedFullMags = alphabetize(magazines);
+
+        // Store every unique title of the magazines in alphabetizedFullMags
+        std::vector<std::string> titles;
+        titles.push_back(alphabetizedFullMags[0]->getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMags[0]->getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(BasicInformation* mag:alphabetizedFullMags)
+        {
+            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+            // the mag title then loop 
+            if(mag->getTitle() != currentTitle)
+            {
+                titles.push_back(mag->getTitle());
+                currentTitle = mag->getTitle();
+            }
+        }
+
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+        // information of the magazine and loop
+        std::vector<BasicInformation*> alphabetizedAndLatest;
+        std::vector<BasicInformation*> returned;
+        for(std::string t:titles)
+        {
+            alphabetizedAndLatest = filterNewestEdition(magazines, t);
+            for(BasicInformation* mag:alphabetizedAndLatest)
+                returned.push_back(mag);
+        }
+        return returned;
+    }
+
     virtual ~BasicInformation() = default;
 };
 
@@ -124,6 +255,7 @@ public:
 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
+    int getIssue() const override { return 0; }
 
     void displayLongForm() const override
     {
@@ -135,20 +267,6 @@ public:
     void displayShortForm() const override
     {
         std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
-    }
-
-    std::vector<Book> alphabetize(std::vector<Book> books)
-    {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<Book> alphabetized = books;
-
-        // Use std::sort to sort the 'alphabetized' vector by the title field
-        // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const Book& a, const Book& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
-        });
-
-        return alphabetized; // The sorted vector is returned
     }
 
     float getCurrentPrice() const override 
@@ -191,7 +309,7 @@ public:
 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
-    int getIssue() const { return issue; }
+    int getIssue() const override { return issue; }
     std::string getMonthPublished() const { return monthPublished; }
 
     void displayLongForm() const override
@@ -207,87 +325,73 @@ public:
         std::cout << type << "; " << getTitle() << "; " << getEdition() << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
 
-    std::vector<Magazine> alphabetize(std::vector<Magazine> mags)
-    {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<Magazine> alphabetized = mags;
-
-        // Use std::sort to sort the 'alphabetized' vector by the title field
-        // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const Magazine& a, const Magazine& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
-        });
-
-        return alphabetized; // The sorted vector is returned
-    }
-
     // Filters a vector of type Magazine with a specific title in a desceding order with the latest issue of that magazine displayed first 
     // and the oldest issue is last
-    std::vector<Magazine> filterNewestIssue(std::vector<Magazine> magazines, std::string title)
-    {
-        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-        std::vector<Magazine> titleMagazines;
-        for(Magazine magazine:magazines)
-        {
-            if(magazine.getTitle() == title)
-                titleMagazines.push_back(magazine);
-        }
+    // std::vector<Magazine> filterNewestIssue(std::vector<Magazine> magazines, std::string title)
+    // {
+    //     // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+    //     std::vector<Magazine> titleMagazines;
+    //     for(Magazine magazine:magazines)
+    //     {
+    //         if(magazine.getTitle() == title)
+    //             titleMagazines.push_back(magazine);
+    //     }
 
-        // Creates a vector of type int to store the numbers of the magazine issues
-        std::vector<int> issues;
-        for(Magazine magazine:titleMagazines)
-            issues.push_back(magazine.getIssue());
+    //     // Creates a vector of type int to store the numbers of the magazine issues
+    //     std::vector<int> issues;
+    //     for(Magazine magazine:titleMagazines)
+    //         issues.push_back(magazine.getIssue());
 
-        // Sort the numbers from greatest to least
-        std::sort(issues.begin(), issues.end(), std::greater<int>());
+    //     // Sort the numbers from greatest to least
+    //     std::sort(issues.begin(), issues.end(), std::greater<int>());
 
-        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-        std::vector<Magazine> sortedMagazines;
-        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
-        for(int i = 0; i<issues.size(); i++)
-        {
-            for(Magazine magazine:titleMagazines)
-            {
-                if(magazine.getIssue() == issues[i])
-                    sortedMagazines.push_back(magazine);
-            }
-        }
+    //     // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+    //     std::vector<Magazine> sortedMagazines;
+    //     // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+    //     // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+    //     for(int i = 0; i<issues.size(); i++)
+    //     {
+    //         for(Magazine magazine:titleMagazines)
+    //         {
+    //             if(magazine.getIssue() == issues[i])
+    //                 sortedMagazines.push_back(magazine);
+    //         }
+    //     }
         
-        return sortedMagazines; // Vector 'sortedMagazines' is returned
-    }
+    //     return sortedMagazines; // Vector 'sortedMagazines' is returned
+    // }
 
-    std::vector<Magazine> alphaAndFilter(std::vector<Magazine> magazines)
-    {
-        std::vector<Magazine> alphabetizedFullMags = alphabetize(magazines);
+    // std::vector<Magazine> alphaAndFilter(std::vector<Magazine> magazines)
+    // {
+    //     std::vector<Magazine> alphabetizedFullMags = alphabetize(magazines);
 
-        // Store every unique title of the magazines in alphabetizedFullMags
-        std::vector<std::string> titles;
-        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
-        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-        for(Magazine mag:alphabetizedFullMags)
-        {
-            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-            // the mag title then loop 
-            if(mag.getTitle() != currentTitle)
-            {
-                titles.push_back(mag.getTitle());
-                currentTitle = mag.getTitle();
-            }
-        }
+    //     // Store every unique title of the magazines in alphabetizedFullMags
+    //     std::vector<std::string> titles;
+    //     titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
+    //     std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+    //     for(Magazine mag:alphabetizedFullMags)
+    //     {
+    //         // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+    //         // the mag title then loop 
+    //         if(mag.getTitle() != currentTitle)
+    //         {
+    //             titles.push_back(mag.getTitle());
+    //             currentTitle = mag.getTitle();
+    //         }
+    //     }
 
-        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-        // information of the magazine and loop
-        std::vector<Magazine> alphabetizedAndLatest;
-        std::vector<Magazine> returned;
-        for(std::string t:titles)
-        {
-            alphabetizedAndLatest = filterNewestIssue(magazines, t);
-            for(Magazine mag:alphabetizedAndLatest)
-                returned.push_back(mag);
-        }
-        return returned;
-    }
+    //     // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+    //     // information of the magazine and loop
+    //     std::vector<Magazine> alphabetizedAndLatest;
+    //     std::vector<Magazine> returned;
+    //     for(std::string t:titles)
+    //     {
+    //         alphabetizedAndLatest = filterNewestIssue(magazines, t);
+    //         for(Magazine mag:alphabetizedAndLatest)
+    //             returned.push_back(mag);
+    //     }
+    //     return returned;
+    // }
 
     float getCurrentPrice() const override 
     {
@@ -328,6 +432,7 @@ public:
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getTargetAge() const { return targetAge; }
+    int getIssue() const override { return 0; }
 
     void displayLongForm() const override
     {
@@ -339,20 +444,6 @@ public:
     void displayShortForm() const override
     {
         std::cout << type << "; " << getTitle() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
-    }
-
-    std::vector<ChildrensBook> alphabetize(std::vector<ChildrensBook> childrensBooks)
-    {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<ChildrensBook> alphabetized = childrensBooks;
-
-        // Use std::sort to sort the 'alphabetized' vector by the title field
-        // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const ChildrensBook& a, const ChildrensBook& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
-        });
-
-        return alphabetized; // The sorted vector is returned
     }
 
     float getCurrentPrice() const override 
@@ -394,6 +485,7 @@ public:
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getTypes() const { return types; }
+    int getIssue() const override { return 0; }
 
     void displayLongForm() const override
     {
@@ -405,86 +497,6 @@ public:
     void displayShortForm() const override
     {
         std::cout << type << "; " << getTitle() << "; " << getEdition() << "; " << author << "; " << getYearPublished() << "; " << getCopies() << std::endl;
-    }
-
-    std::vector<PuzzlesAndGames> alphabetize(std::vector<PuzzlesAndGames> pAndGs)
-    {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<PuzzlesAndGames> alphabetized = pAndGs;
-
-        // Use std::sort to sort the 'alphabetized' vector by the title field
-        // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const PuzzlesAndGames& a, const PuzzlesAndGames& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
-        });
-
-        return alphabetized; // The sorted vector is returned
-    }
-    
-    std::vector<PuzzlesAndGames> filterNewestEdition(std::vector<PuzzlesAndGames> magazines, std::string title)
-    {
-        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-        std::vector<PuzzlesAndGames> titleMagazines;
-        for(PuzzlesAndGames magazine:magazines)
-        {
-            if(magazine.getTitle() == title)
-                titleMagazines.push_back(magazine);
-        }
-
-        // Creates a vector of type int to store the numbers of the magazine issues
-        std::vector<int> issues;
-        for(PuzzlesAndGames magazine:titleMagazines)
-            issues.push_back((magazine.getEdition())[0]);
-
-        // Sort the numbers from greatest to least
-        std::sort(issues.begin(), issues.end(), std::greater<int>());
-
-        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-        std::vector<PuzzlesAndGames> sortedMagazines;
-        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
-        for(int i = 0; i<issues.size(); i++)
-        {
-            for(PuzzlesAndGames magazine:titleMagazines)
-            {
-                if((magazine.getEdition())[0] == issues[i])
-                    sortedMagazines.push_back(magazine);
-            }
-        }
-        
-        return sortedMagazines; // Vector 'sortedMagazines' is returned
-    }
-
-    std::vector<PuzzlesAndGames> alphaAndFilter(std::vector<PuzzlesAndGames> magazines)
-    {
-        std::vector<PuzzlesAndGames> alphabetizedFullMags = alphabetize(magazines);
-
-        // Store every unique title of the magazines in alphabetizedFullMags
-        std::vector<std::string> titles;
-        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
-        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-        for(PuzzlesAndGames mag:alphabetizedFullMags)
-        {
-            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-            // the mag title then loop 
-            if(mag.getTitle() != currentTitle)
-            {
-                titles.push_back(mag.getTitle());
-                currentTitle = mag.getTitle();
-            }
-        }
-
-        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-        // information of the magazine and loop
-        std::vector<PuzzlesAndGames> alphabetizedAndLatest;
-        std::vector<PuzzlesAndGames> returned;
-        for(std::string t:titles)
-        {
-            alphabetizedAndLatest = filterNewestEdition(magazines, t);
-            for(PuzzlesAndGames mag:alphabetizedAndLatest)
-                returned.push_back(mag);
-        }
-        return returned;
     }
 
     float getCurrentPrice() const override 
@@ -526,6 +538,7 @@ public:
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getCuisineType() const { return cuisineType; }
+    int getIssue() const override { return 0; }
 
     void displayLongForm() const override
     {
@@ -537,86 +550,6 @@ public:
     void displayShortForm() const override
     {
         std::cout << type << "; " << getTitle() << "; " << author << "; " << getEdition() << "; " << getYearPublished() << "; " << getCopies() << std::endl;
-    }
-
-    std::vector<CookBook> alphabetize(std::vector<CookBook> cookbooks)
-    {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<CookBook> alphabetized = cookbooks;
-
-        // Use std::sort to sort the 'alphabetized' vector by the title field
-        // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const CookBook& a, const CookBook& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
-        });
-
-        return alphabetized; // The sorted vector is returned
-    }
-    
-    std::vector<CookBook> filterNewestEdition(std::vector<CookBook> magazines, std::string title)
-    {
-        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-        std::vector<CookBook> titleMagazines;
-        for(CookBook magazine:magazines)
-        {
-            if(magazine.getTitle() == title)
-                titleMagazines.push_back(magazine);
-        }
-
-        // Creates a vector of type int to store the numbers of the magazine issues
-        std::vector<int> issues;
-        for(CookBook magazine:titleMagazines)
-            issues.push_back((magazine.getEdition())[0]);
-
-        // Sort the numbers from greatest to least
-        std::sort(issues.begin(), issues.end(), std::greater<int>());
-
-        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-        std::vector<CookBook> sortedMagazines;
-        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
-        for(int i = 0; i<issues.size(); i++)
-        {
-            for(CookBook magazine:titleMagazines)
-            {
-                if((magazine.getEdition())[0] == issues[i])
-                    sortedMagazines.push_back(magazine);
-            }
-        }
-        
-        return sortedMagazines; // Vector 'sortedMagazines' is returned
-    }  
-
-    std::vector<CookBook> alphaAndFilter(std::vector<CookBook> magazines)
-    {
-        std::vector<CookBook> alphabetizedFullMags = alphabetize(magazines);
-
-        // Store every unique title of the magazines in alphabetizedFullMags
-        std::vector<std::string> titles;
-        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
-        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-        for(CookBook mag:alphabetizedFullMags)
-        {
-            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-            // the mag title then loop 
-            if(mag.getTitle() != currentTitle)
-            {
-                titles.push_back(mag.getTitle());
-                currentTitle = mag.getTitle();
-            }
-        }
-
-        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-        // information of the magazine and loop
-        std::vector<CookBook> alphabetizedAndLatest;
-        std::vector<CookBook> returned;
-        for(std::string t:titles)
-        {
-            alphabetizedAndLatest = filterNewestEdition(magazines, t);
-            for(CookBook mag:alphabetizedAndLatest)
-                returned.push_back(mag);
-        }
-        return returned;
     }
 
     float getCurrentPrice() const override 
@@ -659,7 +592,7 @@ public:
 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
-    int getIssue() const { return issue; }
+    int getIssue() const override { return issue; }
     std::string getArtStyle() const { return artStyle; }
 
     void displayLongForm() const override
@@ -673,86 +606,72 @@ public:
     {
         std::cout << type << "; " << getTitle() << "; " << author << "; " << issue << "; " << getYearPublished() << "; " << getCopies() << std::endl;
     }
-
-    std::vector<GraphicNovels> alphabetize(std::vector<GraphicNovels> gNovels)
-    {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<GraphicNovels> alphabetized = gNovels;
-
-        // Use std::sort to sort the 'alphabetized' vector by the title field
-        // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const GraphicNovels& a, const GraphicNovels& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
-        });
-
-        return alphabetized; // The sorted vector is returned
-    }
     
-    std::vector<GraphicNovels> filterNewestIssue(std::vector<GraphicNovels> magazines, std::string title)
-    {
-        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-        std::vector<GraphicNovels> titleMagazines;
-        for(GraphicNovels magazine:magazines)
-        {
-            if(magazine.getTitle() == title)
-                titleMagazines.push_back(magazine);
-        }
+    // std::vector<GraphicNovels> filterNewestIssue(std::vector<GraphicNovels> magazines, std::string title)
+    // {
+    //     // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
+    //     std::vector<GraphicNovels> titleMagazines;
+    //     for(GraphicNovels magazine:magazines)
+    //     {
+    //         if(magazine.getTitle() == title)
+    //             titleMagazines.push_back(magazine);
+    //     }
 
-        // Creates a vector of type int to store the numbers of the magazine issues
-        std::vector<int> issues;
-        for(GraphicNovels magazine:titleMagazines)
-            issues.push_back(magazine.getIssue());
+    //     // Creates a vector of type int to store the numbers of the magazine issues
+    //     std::vector<int> issues;
+    //     for(GraphicNovels magazine:titleMagazines)
+    //         issues.push_back(magazine.getIssue());
 
-        // Sort the numbers from greatest to least
-        std::sort(issues.begin(), issues.end(), std::greater<int>());
+    //     // Sort the numbers from greatest to least
+    //     std::sort(issues.begin(), issues.end(), std::greater<int>());
 
-        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-        std::vector<GraphicNovels> sortedMagazines;
-        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
-        for(int i = 0; i<issues.size(); i++)
-        {
-            for(GraphicNovels magazine:titleMagazines)
-            {
-                if(magazine.getIssue() == issues[i])
-                    sortedMagazines.push_back(magazine);
-            }
-        }
+    //     // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
+    //     std::vector<GraphicNovels> sortedMagazines;
+    //     // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
+    //     // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+    //     for(int i = 0; i<issues.size(); i++)
+    //     {
+    //         for(GraphicNovels magazine:titleMagazines)
+    //         {
+    //             if(magazine.getIssue() == issues[i])
+    //                 sortedMagazines.push_back(magazine);
+    //         }
+    //     }
         
-        return sortedMagazines; // Vector 'sortedMagazines' is returned
-    } 
+    //     return sortedMagazines; // Vector 'sortedMagazines' is returned
+    // } 
 
-    std::vector<GraphicNovels> alphaAndFilter(std::vector<GraphicNovels> magazines)
-    {
-        std::vector<GraphicNovels> alphabetizedFullMags = alphabetize(magazines);
+    // std::vector<GraphicNovels> alphaAndFilter(std::vector<GraphicNovels> magazines)
+    // {
+    //     std::vector<GraphicNovels> alphabetizedFullMags = alphabetize(magazines);
 
-        // Store every unique title of the magazines in alphabetizedFullMags
-        std::vector<std::string> titles;
-        titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
-        std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-        for(GraphicNovels mag:alphabetizedFullMags)
-        {
-            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-            // the mag title then loop 
-            if(mag.getTitle() != currentTitle)
-            {
-                titles.push_back(mag.getTitle());
-                currentTitle = mag.getTitle();
-            }
-        }
+    //     // Store every unique title of the magazines in alphabetizedFullMags
+    //     std::vector<std::string> titles;
+    //     titles.push_back(alphabetizedFullMags[0].getTitle()); // storing the first title 
+    //     std::string currentTitle = alphabetizedFullMags[0].getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+    //     for(GraphicNovels mag:alphabetizedFullMags)
+    //     {
+    //         // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
+    //         // the mag title then loop 
+    //         if(mag.getTitle() != currentTitle)
+    //         {
+    //             titles.push_back(mag.getTitle());
+    //             currentTitle = mag.getTitle();
+    //         }
+    //     }
 
-        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-        // information of the magazine and loop
-        std::vector<GraphicNovels> alphabetizedAndLatest;
-        std::vector<GraphicNovels> returned;
-        for(std::string t:titles)
-        {
-            alphabetizedAndLatest = filterNewestIssue(magazines, t);
-            for(GraphicNovels mag:alphabetizedAndLatest)
-                returned.push_back(mag);
-        }
-        return returned;
-    }
+    //     // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
+    //     // information of the magazine and loop
+    //     std::vector<GraphicNovels> alphabetizedAndLatest;
+    //     std::vector<GraphicNovels> returned;
+    //     for(std::string t:titles)
+    //     {
+    //         alphabetizedAndLatest = filterNewestIssue(magazines, t);
+    //         for(GraphicNovels mag:alphabetizedAndLatest)
+    //             returned.push_back(mag);
+    //     }
+    //     return returned;
+    // }
 
     float getCurrentPrice() const override 
     {
@@ -1100,44 +1019,56 @@ int main() {
     BasicInformation* temp;
     // Calls function to load books from csv file into a vector called 'books' of the type Book 
     std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
+    std::vector<BasicInformation*> booksPtr;
     for(Book &book:books)
     {
         temp = &book;
+        booksPtr.push_back(temp);
         allItems.push_back(temp);
     }
     ID = allItems.size();
     std::vector<ChildrensBook> childrensBooks = loadChildrensBooksFromCSV("childrens-books.csv", ID);
+    std::vector<BasicInformation*> childrensBooksPtr;
     for(ChildrensBook &book:childrensBooks)
     {
         temp = &book;
+        childrensBooksPtr.push_back(temp);
         allItems.push_back(temp);
     }
     ID = allItems.size();
     std::vector<PuzzlesAndGames> puzzlesAndGames = loadPAndGFromCSV("puzzles-games.csv", ID);
+    std::vector<BasicInformation*> puzzlesAndGamesPtr;
     for(PuzzlesAndGames &book:puzzlesAndGames)
     {
         temp = &book;
+        puzzlesAndGamesPtr.push_back(temp);
         allItems.push_back(temp);
     }
     ID = allItems.size();
     std::vector<CookBook> cookBooks = loadCookbooksFromCSV("cookbooks.csv", ID);
+    std::vector<BasicInformation*> cookBooksPtr;
     for(CookBook &book:cookBooks)
     {
         temp = &book;
+        cookBooksPtr.push_back(temp);
         allItems.push_back(temp);
     }
     ID = allItems.size();
     std::vector<GraphicNovels> graphicNovels = loadGraphicNovelsFromCSV("graphic-novels.csv", ID);
+    std::vector<BasicInformation*> graphicNovelsPtr;
     for(GraphicNovels &novel:graphicNovels)
     {
         temp = &novel;
+        graphicNovelsPtr.push_back(temp);
         allItems.push_back(temp);
     }
     ID = allItems.size();
     std::vector<Magazine> magazines = loadMagazinesFromCSV("magazines.csv", ID);
+    std::vector<BasicInformation*> magazinesPtr;
     for(Magazine &mag:magazines)
     {
         temp = &mag;
+        magazinesPtr.push_back(temp);
         allItems.push_back(temp);
     }
     ID = allItems.size();
@@ -1181,48 +1112,30 @@ int main() {
 
     std::cout << "\n=== 7. Print alphabetized list of all items, sorted further by latest issue/edition (for magazines/graphic novels/cookbooks/puzzle books) ===" << std::endl;
     std::vector<BasicInformation*> alphabetizedItems;
-    
-    books = books[0].alphabetize(books);
-    for(Book &book:books)
-    {
-        temp = &book;
-        alphabetizedItems.push_back(temp);
-    }
-    childrensBooks = childrensBooks[0].alphabetize(childrensBooks);
-    for(ChildrensBook &book:childrensBooks)
-    {
-        temp = &book;
-        alphabetizedItems.push_back(temp);
-    }
-    puzzlesAndGames = puzzlesAndGames[0].alphaAndFilter(puzzlesAndGames);
-    for(PuzzlesAndGames &book:puzzlesAndGames)
-    {
-        temp = &book;
-        alphabetizedItems.push_back(temp);
-    }
-    cookBooks = cookBooks[0].alphaAndFilter(cookBooks);
-    for(CookBook &book:cookBooks)
-    {
-        temp = &book;
-        alphabetizedItems.push_back(temp);
-    }
-    graphicNovels = graphicNovels[0].alphaAndFilter(graphicNovels);
-    for(GraphicNovels &novel:graphicNovels)
-    {
-        temp = &novel;
-        alphabetizedItems.push_back(temp);
-    }
-    magazines = magazines[0].alphaAndFilter(magazines);
-    for(Magazine &mag:magazines)
-    {
-        temp = &mag;
-        alphabetizedItems.push_back(temp);
-    }
 
-    // for those written material with issue and edition to sort store the titles of the ones with multiple of the same titles
-    // alphabetize only the ones with unique titles
-    // nested for loop to look through each title and if same then check downcast to what 
-    // go through to print in the same order 
+    booksPtr = BasicInformation::alphabetize(booksPtr);
+    for(auto* item:booksPtr)
+        alphabetizedItems.push_back(item);
+
+    childrensBooksPtr = BasicInformation::alphabetize(childrensBooksPtr);
+    for(auto* item:childrensBooksPtr)
+        alphabetizedItems.push_back(item);
+
+    puzzlesAndGamesPtr = BasicInformation::alphaAndFilterEdition(puzzlesAndGamesPtr);
+    for(auto* item:puzzlesAndGamesPtr)
+        alphabetizedItems.push_back(item);
+
+    cookBooksPtr = BasicInformation::alphaAndFilterEdition(cookBooksPtr);
+    for(auto* item:cookBooksPtr)
+        alphabetizedItems.push_back(item);
+
+    graphicNovelsPtr = BasicInformation::alphaAndFilterEdition(graphicNovelsPtr);
+    for(auto* item:graphicNovelsPtr)
+        alphabetizedItems.push_back(item);
+
+    magazinesPtr = BasicInformation::alphaAndFilterIssue(magazinesPtr);
+    for(auto* item:magazinesPtr)
+        alphabetizedItems.push_back(item);
 
     alphabetizedItems = BasicInformation::alphabetize(alphabetizedItems);
     for(auto* item:alphabetizedItems)
