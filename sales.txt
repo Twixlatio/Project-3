@@ -1,0 +1,144 @@
+Book; Moby Dick; Herman Melville; 1851; 3; $12.5
+Book; War and Peace; Leo Tolstoy; 1869; 0; $18.99
+Children's Book; Alice's Adventures in Wonderland; Lewis Carroll; 1865; 0; $1.25
+Magazine; Life; 1st; 1; 1936; 0; $1000
+Book; To Kill a Mockingbird; Harper Lee; 1960; 0; $10.99
+Book; 1984; George Orwell; 1949; 4; $9.99
+Book; The Great Gatsby; F. Scott Fitzgerald; 1925; 2; $10.5
+Book; Moby Dick; Herman Melville; 1851; 2; $12.5
+Book; Brave New World; Aldous Huxley; 1932; 9; $11.99
+Book; The Catcher in the Rye; J.D. Salinger; 1951; 2; $10.99
+Book; The Hobbit; J.R.R. Tolkien; 1937; 7; $12.99
+Book; The Lord of the Rings: The Fellowship of the Ring; J.R.R. Tolkien; 1954; 2; $13.99
+Book; The Lord of the Rings: The Two Towers; J.R.R. Tolkien; 1954; 6; $13.99
+Book; The Lord of the Rings: The Return of the King; J.R.R. Tolkien; 1955; 4; $13.99
+Book; The Hunger Games; Suzanne Collins; 2008; 3; $10.99
+Book; Catching Fire; Suzanne Collins; 2009; 2; $11.99
+Book; The Ballad of Songbirds and Snakes; Suzanne Collins; 2020; 4; $19.99
+Children's Book; The Magical Forest; Lily Harper; 2018; 4; $12.99
+Children's Book; Adventures with Finn & Flo; Tom Archer; 2020; 3; $10.49
+Children's Book; The Science Lab Mysteries; Dr. Emma Wells; 2021; 2; $15.99
+Children's Book; Cooking with Charlie; Sarah Nguyen; 2019; 1; $9.99
+Children's Book; The Mystery of the Lost Pencil; Mike Torres; 2017; 2; $8.99
+Children's Book; My First Nature Walk; Olivia Hart; 2015; 1; $6.99
+Children's Book; The Brave Little Dinosaur; Jack Daniels; 2016; 4; $11.49
+Children's Book; The Colorful World of Insects; Emma Clarkson; 2018; 5; $13.25
+Children's Book; Spooky Tales for Little Ears; Jamie Stone; 2022; 3; $14.99
+Children's Book; Ella and the Enchanted Lake; Sophia Flores; 2023; 6; $16.99
+Children's Book; Jasper and the Magic Paintbrush; Anna Gold; 2019; 3; $13.49
+Children's Book; The Animal Rescue Team; Liam Carter; 2021; 4; $12
+Children's Book; Counting Stars; Maria Evans; 2022; 5; $10.75
+Children's Book; Brave Benny's Big Day; Carla Simons; 2020; 2; $9.99
+Children's Book; Mystery in the Library; Ella Roberts; 2023; 3; $14.99
+Children's Book; The Land of Giggles; Steven Bright; 2018; 4; $11.5
+Children's Book; Sally's Science Experiments; Rachel Bloom; 2020; 5; $13.99
+Children's Book; The Giant's Puzzle; Leo Frank; 2017; 2; $15.99
+Children's Book; The Case of the Missing Cake; Julia Knight; 2021; 4; $9.99
+Children's Book; Underwater Friends; Paula Shore; 2019; 3; $10.99
+Puzzle/Game Book; Challenging Sudoku Vol. 1; 1; Barbara Williams; 2007; 8; $15.94
+Puzzle/Game Book; Cryptic Crossword Collection; 3; Gavin Simmons; 2019; 8; $14.71
+Puzzle/Game Book; Brain Teasers and Riddles; 4; Carolyn Barber; 2000; 8; $8.9
+Puzzle/Game Book; The Puzzle Master; 4; Vanessa Garner; 2009; 6; $19.18
+Puzzle/Game Book; Crossword Puzzle Extravaganza; 1; Fernando Hayes; 2001; 3; $17.34
+Puzzle/Game Book; Ultimate Brain Challenge; 1; Jacob Romero; 2013; 0; $19.18
+Puzzle/Game Book; Cryptic Crossword Collection; 1; Christopher Nash; 2007; 3; $8.02
+Puzzle/Game Book; Classic Sudoku Puzzles; 2; Debra Simmons; 2013; 5; $11.77
+Puzzle/Game Book; Mind-Bending Logic Puzzles; 3; Jeremiah Bell; 2016; 1; $7.41
+Puzzle/Game Book; Challenging Sudoku Vol. 3; 3; Mark Newton; 2013; 2; $19.54
+Puzzle/Game Book; Challenging Sudoku Vol. 2; 2; Whitney Logan; 2012; 4; $19.74
+Puzzle/Game Book; The Puzzle Master; 5; Donald Smith; 2021; 7; $16.18
+Puzzle/Game Book; Ultimate Brain Challenge; 2; Erin Krueger; 2015; 2; $14.31
+Puzzle/Game Book; The Ultimate Sudoku Collection; 2; Theresa Rojas; 2012; 8; $15.38
+Puzzle/Game Book; Sudoku for Beginners; 3; Robert Hernandez; 2005; 0; $19.93
+Puzzle/Game Book; Brain Games for Adults; 3; Latoya Brown; 2018; 1; $17.5
+Puzzle/Game Book; Crosswords for All Ages; 5; Jeffrey Moreno; 2015; 6; $17.01
+Puzzle/Game Book; Clever Word Games; 4; Cynthia Davis; 2022; 4; $9.87
+Puzzle/Game Book; Ultimate Brain Challenge; 3; Gabrielle Gomez; 2020; 4; $17.57
+Puzzle/Game Book; Sudoku Madness; 2; Kenneth Jackson; 2019; 3; $18.24
+Cookbook; The Joy of Italian Cooking; Maria Bianchi; 2; 2018; 4; $29.99
+Cookbook; BBQ & Grill Essentials; John Smith; 1; 2020; 2; $24.95
+Cookbook; Asian Street Food; Lily Chen; 1; 2022; 1; $34.5
+Cookbook; French Pastry Basics; Juliette Dubois; 3; 2019; 3; $39.99
+Cookbook; French Pastry Basics; Juliette Dubois; 2; 2016; 0; $19.99
+Cookbook; Vegetarian Around the World; Priya Desai; 2; 2021; 2; $27.95
+Cookbook; Healthy Mediterranean Diet; Alexandra Rossi; 1; 2017; 3; $31.75
+Cookbook; The Ultimate Vegan Cookbook; Sam Green; 1; 2023; 4; $25
+Cookbook; Classic Mexican Recipes; Diego Ramirez; 4; 2016; 2; $28.5
+Cookbook; Quick & Easy Keto Meals; Emily White; 1; 2021; 5; $26.99
+Cookbook; Southeast Asian Flavors; An Nguyen; 2; 2019; 1; $33.25
+Cookbook; Farm to Table: Fresh Recipes; Eleanor Brown; 2; 2020; 3; $32.99
+Cookbook; Sushi and Japanese Delights; Takashi Inoue; 1; 2018; 2; $36
+Cookbook; Authentic Greek Cooking; Nikos Papadopoulos; 2; 2021; 2; $27.5
+Cookbook; Soul Food Essentials; Mary Jenkins; 3; 2019; 3; $24.99
+Cookbook; Paleo Power Meals; Jordan Mills; 1; 2022; 4; $29.95
+Cookbook; Nordic Kitchen; Eva Andersen; 1; 2020; 2; $31.99
+Cookbook; The Ultimate Smoothie Guide; Lucy Harper; 1; 2021; 1; $22.5
+Cookbook; Bread Baking for Beginners; Chris Nolan; 2; 2018; 3; $26.75
+Cookbook; Fiery Flavors: Hot Sauce Recipes; Carlos Reyes; 1; 2019; 3; $23.99
+Cookbook; Mastering Sauces; Alicia Bernard; 3; 2017; 2; $28.45
+Graphic Novel; The Shadow Chronicles; Lena Wolfe; 1; 2021; 1; $19.99
+Graphic Novel; Urban Legends: Cityscape; Marco Chang; 4; 2018; 0; $15.5
+Graphic Novel; Beyond the Stars; Olivia Nguyen; 1; 2020; 2; $22
+Graphic Novel; Fables of the Forgotten; Isaiah Moon; 1; 2019; 1; $18.75
+Graphic Novel; The Mechanical Heart; Sasha Kim; 3; 2022; 0; $20.5
+Graphic Novel; Echoes of the Past; Jordan Rivera; 2; 2017; 0; $16.99
+Graphic Novel; Digital Dreams; Priya Kaur; 2; 2021; 1; $24.95
+Graphic Novel; Realm of Shadows; Liam Carter; 5; 2019; 0; $18
+Graphic Novel; Aether and Ash; Nina Patel; 1; 2020; 0; $21
+Graphic Novel; Memory Threads; Kevin Tanaka; 6; 2018; 0; $17.8
+Graphic Novel; Whispers of the Forgotten; Emily Zhou; 2; 2016; 0; $14.99
+Graphic Novel; Lost in Time; Carlos Diaz; 1; 2022; 0; $25
+Graphic Novel; Phantom’s Lament; Mira Singh; 3; 2020; 0; $19.5
+Graphic Novel; Realm of Shadows; Liam Carter; 6; 2021; 0; $19.5
+Graphic Novel; Chronicles of the Red Sun; Alex Gomez; 1; 2022; 0; $24.99
+Graphic Novel; The Shadow Chronicles; Lena Wolfe; 3; 2023; 1; $21.99
+Graphic Novel; Urban Legends: Cityscape; Marco Chang; 5; 2021; 0; $17.5
+Graphic Novel; Beyond the Stars; Olivia Nguyen; 3; 2023; 0; $25
+Graphic Novel; Echoes of the Past; Jordan Rivera; 5; 2021; 1; $19.5
+Graphic Novel; Digital Dreams; Priya Kaur; 4; 2024; 1; $27.5
+Graphic Novel; Realm of Shadows; Liam Carter; 7; 2023; 1; $21
+Graphic Novel; Chronicles of the Red Sun; Alex Gomez; 2; 2024; 1; $26.5
+Graphic Novel; Chronicles of the Red Sun; Alex Gomez; 1; 2021; 1; $23.99
+Graphic Novel; Bound by Fate; Noah Bennett; 1; 2019; 0; $18.25
+Graphic Novel; Fragments of the Soul; Sara Lee; 2; 2017; 0; $17.5
+Graphic Novel; Steel and Bone; Ethan Howard; 1; 2023; 0; $22.95
+Graphic Novel; Dreams of Another World; Aisha Malik; 2; 2019; 1; $19.8
+Graphic Novel; Silent Scream; James O'Hara; 3; 2018; 0; $16.75
+Graphic Novel; Winds of Change; Mia Roberts; 1; 2020; 0; $21.99
+Graphic Novel; The Shadow Chronicles; Lena Wolfe; 2; 2022; 0; $20.99
+Graphic Novel; Urban Legends: Cityscape; Marco Chang; 4; 2019; 1; $16
+Graphic Novel; Beyond the Stars; Olivia Nguyen; 2; 2021; 1; $23.5
+Graphic Novel; Echoes of the Past; Jordan Rivera; 3; 2019; 0; $18.25
+Graphic Novel; Digital Dreams; Priya Kaur; 2; 2023; 0; $26
+Graphic Novel; Spider-Man: Web of Shadows; Stan Lee; 1; 2015; 2; $18.5
+Graphic Novel; Spider-Man: Web of Shadows; Stan Lee; 2; 2016; 1; $19.5
+Graphic Novel; Spider-Man: City at War; Brian Reed; 1; 2018; 3; $20
+Graphic Novel; Spider-Man: City at War; Brian Reed; 2; 2019; 2; $21.5
+Graphic Novel; Superman: The Last Son of Krypton; John Byrne; 1; 2014; 1; $17.75
+Graphic Novel; Superman: The Last Son of Krypton; John Byrne; 2; 2015; 1; $18.75
+Graphic Novel; Superman: Dawn of Justice; Alan Moore; 1; 2019; 2; $22
+Graphic Novel; Superman: Man of Steel; Dennis O'Neil; 1; 2017; 3; $19.99
+Graphic Novel; Superman: Man of Steel; Dennis O'Neil; 2; 2018; 1; $21
+Magazine; Culinary Trends; 12th; 78; 2023; 4; $5.49
+Magazine; Culinary Trends; 12th; 77; 2023; 6; $5.49
+Magazine; Culinary Trends; 12th; 76; 2023; 4; $5.49
+Magazine; Culinary Trends; 12th; 75; 2023; 6; $5.49
+Magazine; Culinary Trends; 11th; 74; 2022; 2; $5.49
+Magazine; Culinary Trends; 11th; 73; 2022; 3; $5.49
+Magazine; Culinary Trends; 11th; 72; 2022; 1; $5.49
+Magazine; Scientific Wonders; 4th; 17; 2023; 2; $7.99
+Magazine; Scientific Wonders; 4th; 18; 2023; 8; $7.99
+Magazine; Scientific Wonders; 4th; 19; 2023; 0; $7.99
+Magazine; Scientific Wonders; 4th; 20; 2023; 3; $7.99
+Magazine; Scientific Wonders; 5th; 24; 2024; 1; $7.99
+Magazine; Scientific Wonders; 5th; 23; 2024; 5; $7.99
+Magazine; Scientific Wonders; 5th; 22; 2024; 8; $7.99
+Magazine; Scientific Wonders; 5th; 21; 2024; 1; $7.99
+Magazine; Global Affairs Weekly; 3rd; 14; 2024; 3; $4.99
+Magazine; Adventure Traveler; 9th; 57; 2022; 1; $6.25
+Magazine; Retro Gaming Monthly; 2nd; 21; 2024; 4; $8.99
+Magazine; Fashion Forward; 6th; 43; 2023; 0; $6.75
+Magazine; Health and Fitness Focus; 8th; 32; 2023; 7; $5.99
+Magazine; History Digest; 4th; 19; 2022; 7; $4.75
+Magazine; Home & Garden Inspirations; 15th; 65; 2023; 7; $6.5
+Magazine; Business Leadership Insights; 7th; 10; 2024; 2; $9.99
