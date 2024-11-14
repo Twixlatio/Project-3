@@ -94,15 +94,15 @@ public:
         return false;
     }
 
-    std::vector<BasicInformation*> alphabetize(std::vector<BasicInformation*> books)
+    static std::vector<BasicInformation*> alphabetize(std::vector<BasicInformation*> books)
     {
         // Create a temporary vector 'alphabetized' to store the sorted books
         std::vector<BasicInformation*> alphabetized = books;
 
         // Use std::sort to sort the 'alphabetized' vector by the title field
         // use a lambda function for the std::sort comparator, compare object titles directly.
-        std::sort(alphabetized.begin(), alphabetized.end(), [](const BasicInformation*& a, const BasicInformation*& b) {
-            return a.getTitle() < b.getTitle(); // Compare books by title
+        std::sort(alphabetized.begin(), alphabetized.end(), [](const BasicInformation* a, const BasicInformation* b) {
+            return a->getTitle() < b->getTitle(); // Compare books by title
         });
 
         return alphabetized; // The sorted vector is returned
@@ -110,7 +110,6 @@ public:
 
     virtual ~BasicInformation() = default;
 };
-
 
 class Book : public BasicInformation
 {
@@ -1220,7 +1219,12 @@ int main() {
         alphabetizedItems.push_back(temp);
     }
 
-    alphabetizedItems = alphabetizedItems[0].alphabetize(alphabetizedItems);
+    // for those written material with issue and edition to sort store the titles of the ones with multiple of the same titles
+    // alphabetize only the ones with unique titles
+    // nested for loop to look through each title and if same then check downcast to what 
+    // go through to print in the same order 
+
+    alphabetizedItems = BasicInformation::alphabetize(alphabetizedItems);
     for(auto* item:alphabetizedItems)
     {
         item->displayShortForm();
