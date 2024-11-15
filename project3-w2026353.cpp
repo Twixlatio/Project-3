@@ -17,7 +17,8 @@ public:
     virtual bool sell() = 0;
 };
 
-// Base class BasicInformation
+// Base class BasicInformation inherits from ISellable interface and stores shared attributes of all written material, getter functions, a setter function, virtual functions, 
+// and filter functions for access of derived class objects 
 class BasicInformation : public ISellable
 {
 private:
@@ -48,12 +49,15 @@ public:
     int getCopies() const { return copies; }
     virtual int getIssue() const = 0;
 
+    // One setter function needed to set copies after selling a copy of a written material
     void setCopies(int c) { copies = c; }
 
+    // virtual functions utilized for overriding in each derived class for each unique output message
     virtual void displayLongForm() const = 0;
     virtual void displayShortForm() const = 0;
     virtual std::string getType() const = 0;
 
+    // function utlilized to return whether a keyword is found in the string that is checked
     bool findQueried(std::string string, std::string keyword)
     {
         size_t found = string.find(keyword);
@@ -63,13 +67,14 @@ public:
             return false;
     }
 
+    // used to log information of the sold written material in file sales.txt
     void log(std::string message)
     {
         // Opening the saleFile called 'sales.txt' in append mode to save the record of every sale in one program run
         // but it is cleared out at the beginning of each program run in main()
         std::ofstream saleFile("sales.txt", std::ios::app);
 
-        // If saleFile is open, log the sale in the format TYPE; TITLE; EDITION; ISSUE; YEAR PUBLISHED; COPIES; $PRICE
+        // If saleFile is open, log the sale with the message given and the price of the written material that called the function
         if(saleFile.is_open())
         {
             saleFile << message << getPrice() << std::endl;
@@ -77,164 +82,171 @@ public:
         saleFile.close();
     }
 
+    // Overrides getCurrentPrice() function in ISellable interface
     float getCurrentPrice() const override 
     {
         return getPrice();
     }
 
+    // Overrides the sell() function in ISellable interface, but do not want to use this and rather use the override of the sell() function
+    // in the derived class. This function is here only to avoid error because all functions in Isellable must be overriden.
     bool sell() override
     {
         std::cout << "Wrong method";
         return false;
     }
 
-    static std::vector<BasicInformation*> alphabetize(std::vector<BasicInformation*> books)
+    // Used to alphabetize a vector of type BasicInformation* and return it
+    static std::vector<BasicInformation*> alphabetize(std::vector<BasicInformation*> materials)
     {
-        // Create a temporary vector 'alphabetized' to store the sorted books
-        std::vector<BasicInformation*> alphabetized = books;
+        // Create a temporary vector 'alphabetized' to store the sorted materials
+        std::vector<BasicInformation*> alphabetized = materials;
 
         // Use std::sort to sort the 'alphabetized' vector by the title field
         // use a lambda function for the std::sort comparator, compare object titles directly.
         std::sort(alphabetized.begin(), alphabetized.end(), [](const BasicInformation* a, const BasicInformation* b) {
-            return a->getTitle() < b->getTitle(); // Compare books by title
+            return a->getTitle() < b->getTitle(); // Compare materials by title
         });
 
         return alphabetized; // The sorted vector is returned
     }
 
-    static std::vector<BasicInformation*> filterNewestIssue(std::vector<BasicInformation*> magazines, std::string title)
+    // Used to filter the newest issue of a vector of type BasicInformation* by title and return it
+    static std::vector<BasicInformation*> filterNewestIssue(std::vector<BasicInformation*> materials, std::string title)
     {
-        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-        std::vector<BasicInformation*> titleMagazines;
-        for(BasicInformation* magazine:magazines)
+        // Creates a vector of type BasicInformation* called titleMaterials to store the materials with the same title of the parameter 'title'
+        std::vector<BasicInformation*> titleMaterials;
+        for(BasicInformation* material:materials)
         {
-            if(magazine->getTitle() == title)
-                titleMagazines.push_back(magazine);
+            if(material->getTitle() == title)
+                titleMaterials.push_back(material);
         }
 
-        // Creates a vector of type int to store the numbers of the magazine issues
+        // Creates a vector of type int to store the numbers of the material's issues
         std::vector<int> issues;
-        for(BasicInformation* magazine:titleMagazines)
+        for(BasicInformation* material:titleMaterials)
         {
-            issues.push_back(magazine->getIssue());
+            issues.push_back(material->getIssue());
         }
 
         // Sort the numbers from greatest to least
         std::sort(issues.begin(), issues.end(), std::greater<int>());
 
-        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-        std::vector<BasicInformation*> sortedMagazines;
-        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
+        // Create a vector of type BasicInformation* called sortedMaterials to store the final sorted materials of a specific title from latest to oldest issue
+        std::vector<BasicInformation*> sortedMaterials;
+        // For every element in issue starting from the first element to the last element, go through the materials in titleMaterials 
+        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMaterials and loop
         for(int i = 0; i<issues.size(); i++)
         {
-            for(BasicInformation* magazine:titleMagazines)
+            for(BasicInformation* material:titleMaterials)
             {
-                if(magazine->getIssue() == issues[i])
-                    sortedMagazines.push_back(magazine);
+                if(material->getIssue() == issues[i])
+                    sortedMaterials.push_back(material);
             }
         }
         
-        return sortedMagazines; // Vector 'sortedMagazines' is returned
+        return sortedMaterials; // Vector 'sortedMaterials' is returned
     }
 
-    static std::vector<BasicInformation*> filterNewestEdition(std::vector<BasicInformation*> magazines, std::string title)
+    // Used to filter the newest edition of a vector of type BasicInformation* by title and return it
+    static std::vector<BasicInformation*> filterNewestEdition(std::vector<BasicInformation*> materials, std::string title)
     {
-        // Creates a vector of type Magazine called titleMagazines to store the magazines with the same title of the parameter 'title'
-        std::vector<BasicInformation*> titleMagazines;
-        for(BasicInformation* magazine:magazines)
+        // Creates a vector of type BasicInformation* called titleMaterials to store the materials with the same title of the parameter 'title'
+        std::vector<BasicInformation*> titleMaterials;
+        for(BasicInformation* material:materials)
         {
-            if(magazine->getTitle() == title)
-                titleMagazines.push_back(magazine);
+            if(material->getTitle() == title)
+                titleMaterials.push_back(material);
         }
 
-        // Creates a vector of type int to store the numbers of the magazine issues
-        std::vector<int> issues;
-        std::vector<BasicInformation*> magazinesWithNoValidEdition;
-        for(BasicInformation* magazine:titleMagazines)
+        // Creates a vector of type int to store the numbers of the material's editions
+        std::vector<int> editions;
+        for(BasicInformation* material:titleMaterials)
         {
-            issues.push_back((magazine->getEdition())[0]);
+            editions.push_back((material->getEdition())[0]);
         }
         
         // Sort the numbers from greatest to least
-        std::sort(issues.begin(), issues.end(), std::greater<int>());
+        std::sort(editions.begin(), editions.end(), std::greater<int>());
 
-        // Create a vector of type Magazine called sortedMagazines to store the final sorted magazines of a specific title from latest to oldest issue
-        std::vector<BasicInformation*> sortedMagazines;
-        // For every element in issue starting from the first element to the last element, go through the magazines in titleMagazines 
-        // and check if the issue of the magazine is the same as the value of issue at that index i and if it is add it to the sortedMagazines and loop
-        for(int i = 0; i<issues.size(); i++)
+        // Create a vector of type BasicInformation* called sortedMaterials to store the final sorted materials of a specific title from latest to oldest issue
+        std::vector<BasicInformation*> sortedMaterials;
+        // For every element in issue starting from the first element to the last element, go through the materials in titleMaterials 
+        // and check if the issue of the material is the same as the value of issue at that index i and if it is add it to the sortedMaterials and loop
+        for(int i = 0; i<editions.size(); i++)
         {
-            for(BasicInformation* magazine:titleMagazines)
+            for(BasicInformation* material:titleMaterials)
             {
-                if((magazine->getEdition())[0] == issues[i])
-                    sortedMagazines.push_back(magazine);
+                if((material->getEdition())[0] == editions[i])
+                    sortedMaterials.push_back(material);
             }
         }
         
-        return sortedMagazines; // Vector 'sortedMagazines' is returned
+        return sortedMaterials; // Vector 'sortedMagazines' is returned
     }
 
-    static std::vector<BasicInformation*> alphaAndFilterIssue(std::vector<BasicInformation*> magazines)
+    // Used to alphabetize and filter the issue of vector of type BasicInformation* and return it
+    static std::vector<BasicInformation*> alphaAndFilterIssue(std::vector<BasicInformation*> materials)
     {
-        std::vector<BasicInformation*> alphabetizedFullMags = alphabetize(magazines);
+        std::vector<BasicInformation*> alphabetizedFullMats = alphabetize(materials);
 
-        // Store every unique title of the magazines in alphabetizedFullMags
+        // Store every unique title of the materials in alphabetizedFullMats
         std::vector<std::string> titles;
-        titles.push_back(alphabetizedFullMags[0]->getTitle()); // storing the first title 
-        std::string currentTitle = alphabetizedFullMags[0]->getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-        for(BasicInformation* mag:alphabetizedFullMags)
+        titles.push_back(alphabetizedFullMats[0]->getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMats[0]->getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(BasicInformation* mat:alphabetizedFullMats)
         {
-            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-            // the mag title then loop 
-            if(mag->getTitle() != currentTitle)
+            // if the current material title is not equal to the currentTitle then add the title of the material and set the currentTitle to equal to 
+            // the material title then loop 
+            if(mat->getTitle() != currentTitle)
             {
-                titles.push_back(mag->getTitle());
-                currentTitle = mag->getTitle();
+                titles.push_back(mat->getTitle());
+                currentTitle = mat->getTitle();
             }
         }
 
         // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-        // information of the magazine and loop
+        // information of the material and loop
         std::vector<BasicInformation*> alphabetizedAndLatest;
         std::vector<BasicInformation*> returned;
         for(std::string t:titles)
         {
-            alphabetizedAndLatest = filterNewestIssue(magazines, t);
-            for(BasicInformation* mag:alphabetizedAndLatest)
-                returned.push_back(mag);
+            alphabetizedAndLatest = filterNewestIssue(materials, t);
+            for(BasicInformation* mat:alphabetizedAndLatest)
+                returned.push_back(mat);
         }
         return returned;
     }
 
-    static std::vector<BasicInformation*> alphaAndFilterEdition(std::vector<BasicInformation*> magazines)
+    // Used to alphabetize and filter the edition of vector of type BasicInformation* and return it
+    static std::vector<BasicInformation*> alphaAndFilterEdition(std::vector<BasicInformation*> materials)
     {
-        std::vector<BasicInformation*> alphabetizedFullMags = alphabetize(magazines);
+        std::vector<BasicInformation*> alphabetizedFullMats = alphabetize(materials);
 
-        // Store every unique title of the magazines in alphabetizedFullMags
+        // Store every unique title of the materials in alphabetizedFullMats
         std::vector<std::string> titles;
-        titles.push_back(alphabetizedFullMags[0]->getTitle()); // storing the first title 
-        std::string currentTitle = alphabetizedFullMags[0]->getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
-        for(BasicInformation* mag:alphabetizedFullMags)
+        titles.push_back(alphabetizedFullMats[0]->getTitle()); // storing the first title 
+        std::string currentTitle = alphabetizedFullMats[0]->getTitle(); // using currentTitle as a tracker to avoid adding repeated titles
+        for(BasicInformation* mat:alphabetizedFullMats)
         {
-            // if the current mag title is not equal to the currentTitle then add the title of the mag and set the currentTitle to equal to 
-            // the mag title then loop 
-            if(mag->getTitle() != currentTitle)
+            // if the current mag title is not equal to the currentTitle then add the title of the material and set the currentTitle to equal to 
+            // the material title then loop 
+            if(mat->getTitle() != currentTitle)
             {
-                titles.push_back(mag->getTitle());
-                currentTitle = mag->getTitle();
+                titles.push_back(mat->getTitle());
+                currentTitle = mat->getTitle();
             }
         }
 
-        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest issues and display the full
-        // information of the magazine and loop
+        // Going through all the titles in 'titles' and performing a filter to sort it from latest to oldest editions and display the full
+        // information of the material and loop
         std::vector<BasicInformation*> alphabetizedAndLatest;
         std::vector<BasicInformation*> returned;
         for(std::string t:titles)
         {
-            alphabetizedAndLatest = filterNewestEdition(magazines, t);
-            for(BasicInformation* mag:alphabetizedAndLatest)
-                returned.push_back(mag);
+            alphabetizedAndLatest = filterNewestEdition(materials, t);
+            for(BasicInformation* mat:alphabetizedAndLatest)
+                returned.push_back(mat);
         }
         return returned;
     }
@@ -242,22 +254,27 @@ public:
     virtual ~BasicInformation() = default;
 };
 
+// Derived class Book inherits from BasicInformation and mostly overrides functions from the base class to display its unique information
 class Book : public BasicInformation
 {
 private: 
     std::string type = "Book";
     std::string author;
 public:
+    // Constructor that calls the constructor of the base class to set those shared member variables and sets the unique one(s) for this class itself as well
     Book(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
     }
 
+    // Getter functions 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const override { return 0; }
 
-    void displayLongForm() const override
+    // Summary: displayLongForm(), displayShortForm() and sell() are overrided with an implementation specific to this class to display different and unique information
+    // for this class
+    void displayLongForm() const override 
     {
         std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << getPrice() << " | Year Published: " 
               << getYearPublished() << " | Page Count: " << getPageCount() << " | Genre: " << getGenre() << " | Summary: " << getSummary() << " | Edition: " << getEdition()
@@ -292,6 +309,7 @@ public:
     }
 };
 
+// Derived class Magazine inherits from BasicInformation and mostly overrides functions from the base class to display its unique information
 class Magazine : public BasicInformation
 {
 private: 
@@ -300,6 +318,7 @@ private:
     int issue;
     std::string monthPublished;
 public:
+    // Constructor that calls the constructor of the base class to set those shared member variables and sets the unique one(s) for this class itself as well
     Magazine(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, int is, std::string m) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
@@ -307,11 +326,14 @@ public:
         monthPublished = m;
     }
 
+    // Getter functions 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const override { return issue; }
     std::string getMonthPublished() const { return monthPublished; }
 
+    // Summary: displayLongForm(), displayShortForm() and sell() are overrided with an implementation specific to this class to display different and unique information
+    // for this class
     void displayLongForm() const override
     {
         std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Edition: " << getEdition() << " | Issue: " << 
@@ -348,6 +370,7 @@ public:
     }
 };
 
+// Derived class ChildrensBook inherits from BasicInformation and mostly overrides functions from the base class to display its unique information
 class ChildrensBook : public BasicInformation
 {
 private: 
@@ -355,17 +378,21 @@ private:
     std::string author;
     std::string targetAge;
 public:
+    // Constructor that calls the constructor of the base class to set those shared member variables and sets the unique one(s) for this class itself as well
     ChildrensBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ta) : BasicInformation(i, t, y, p, pg, g, s, e, c) 
     {
         author = a;
         targetAge = ta;
     }
 
+    // Getter functions 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getTargetAge() const { return targetAge; }
     int getIssue() const override { return 0; }
 
+    // Summary: displayLongForm(), displayShortForm() and sell() are overrided with an implementation specific to this class to display different and unique information
+    // for this class
     void displayLongForm() const override
     {
         std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
@@ -401,6 +428,7 @@ public:
     }
 };
 
+// Derived class PuzzlesAndGames inherits from BasicInformation and mostly overrides functions from the base class to display its unique information
 class PuzzlesAndGames : public BasicInformation
 {
 private: 
@@ -408,17 +436,21 @@ private:
     std::string author;
     std::string types;
 public:
+    // Constructor that calls the constructor of the base class to set those shared member variables and sets the unique one(s) for this class itself as well
     PuzzlesAndGames(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ty) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
         types = ty;
     }
 
+    // Getter functions 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getTypes() const { return types; }
     int getIssue() const override { return 0; }
 
+    // Summary: displayLongForm(), displayShortForm() and sell() are overrided with an implementation specific to this class to display different and unique information
+    // for this class
     void displayLongForm() const override
     {
         std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
@@ -454,6 +486,7 @@ public:
     }
 };
 
+// Derived class CookBook inherits from BasicInformation and mostly overrides functions from the base class to display its unique information
 class CookBook : public BasicInformation
 {
 private: 
@@ -461,17 +494,21 @@ private:
     std::string author;
     std::string cuisineType;
 public:
+    // Constructor that calls the constructor of the base class to set those shared member variables and sets the unique one(s) for this class itself as well
     CookBook(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string ct) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
         cuisineType = ct;
     }
 
+    // Getter functions 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     std::string getCuisineType() const { return cuisineType; }
     int getIssue() const override { return 0; }
 
+    // Summary: displayLongForm(), displayShortForm() and sell() are overrided with an implementation specific to this class to display different and unique information
+    // for this class
     void displayLongForm() const override
     {
         std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author: " << author << " | Price: $" << 
@@ -507,6 +544,7 @@ public:
     }
 };
 
+// Derived class GraphicNovels inherits from BasicInformation and mostly overrides functions from the base class to display its unique information
 class GraphicNovels : public BasicInformation
 {
 private: 
@@ -515,6 +553,7 @@ private:
     std::string artStyle;
     int issue;
 public:
+    // Constructor that calls the constructor of the base class to set those shared member variables and sets the unique one(s) for this class itself as well
     GraphicNovels(int i, std::string t, int y, float p, int pg, std::string g, std::string s, std::string e, int c, std::string a, std::string as, int is) : BasicInformation(i, t, y, p, pg, g, s, e, c)
     {
         author = a;
@@ -522,11 +561,14 @@ public:
         issue = is;
     }
 
+    // Getter functions 
     std::string getType() const override { return type; }
     std::string getAuthor() const { return author; }
     int getIssue() const override { return issue; }
     std::string getArtStyle() const { return artStyle; }
 
+    // Summary: displayLongForm(), displayShortForm() and sell() are overrided with an implementation specific to this class to display different and unique information
+    // for this class
     void displayLongForm() const override
     {
         std::cout << "ID: " << getId() << " | Type: " << type << " | Title: " << getTitle() << " | Author/Illustrator: " << author << " | Price: $" << 
@@ -561,8 +603,8 @@ public:
         }
     }
 };
-// Function to read books from a CSV file into a vector of Book structs
-// update the return type if you choose to use a different container
+
+// Function to read books from a CSV file into a vector of Book objects
 std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
     // declare your container that will hold your list of books
     std::vector<Book> books;
@@ -601,10 +643,7 @@ std::vector<Book> loadBooksFromCSV(const std::string& filename, int id) {
         std::getline(ss, tmp, ',');
         copies = std::stoi(tmp);
 
-        //Title,Author,Price,Year Published,Pagecount,Genre,Summary,Edition,Copies
-        //To Kill a Mockingbird,Harper Lee,10.99,1960,281,Fiction,A novel about racial injustice in the Deep South.,hardcover,1
-
-        // Declare and populate new Book Struct
+        // Declare and populate new Book object
         Book book(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author);
         // Add the book to the container
         books.push_back(book);
@@ -666,9 +705,9 @@ std::vector<Magazine> loadMagazinesFromCSV(const std::string& filename, int id) 
     return magazines;
 }
 
-// Function to read magazines from a CSV file into a vector of Magazine objects
+// Function to read children's books from a CSV file into a vector of ChildrensBook objects
 std::vector<ChildrensBook> loadChildrensBooksFromCSV(const std::string& filename, int id) {
-    // declare your container that will hold your list of magazines
+    // declare your container that will hold your list of children's books
     std::vector<ChildrensBook> cbooks;
 
     // open file
@@ -706,19 +745,19 @@ std::vector<ChildrensBook> loadChildrensBooksFromCSV(const std::string& filename
         std::getline(ss, tmp, ',');
         copies = std::stoi(tmp);
 
-        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        // creating the ChildrensBook object with all the parameters and id increases by 1 after the value of id is stored in the object
         ChildrensBook cbook(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, targetAge);
         cbooks.push_back(cbook);
     }
 
-    // close file and return vector of magazines
+    // close file and return vector of children's books
     file.close();
     return cbooks;
 }
 
-// Function to read magazines from a CSV file into a vector of Magazine objects
+// Function to read puzzles and games books from a CSV file into a vector of PuzzlesAndGames objects
 std::vector<PuzzlesAndGames> loadPAndGFromCSV(const std::string& filename, int id) {
-    // declare your container that will hold your list of magazines
+    // declare your container that will hold your list of puzzles and games books
     std::vector<PuzzlesAndGames> pAndGs;
 
     // open file
@@ -756,18 +795,19 @@ std::vector<PuzzlesAndGames> loadPAndGFromCSV(const std::string& filename, int i
         std::getline(ss, tmp, ',');
         copies = std::stoi(tmp);
 
-        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        // creating the PuzzlesAndGames object with all the parameters and id increases by 1 after the value of id is stored in the object
         PuzzlesAndGames pAndG(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, type);
         pAndGs.push_back(pAndG);
     }
 
-    // close file and return vector of magazines
+    // close file and return vector of puzzles and games books
     file.close();
     return pAndGs;
 }
 
+// Function to read cookbooks from a CSV file into a vector of CookBook objects
 std::vector<CookBook> loadCookbooksFromCSV(const std::string& filename, int id) {
-    // declare your container that will hold your list of magazines
+    // declare your container that will hold your list of cookbooks
     std::vector<CookBook> cookbooks;
 
     // open file
@@ -805,18 +845,19 @@ std::vector<CookBook> loadCookbooksFromCSV(const std::string& filename, int id) 
         std::getline(ss, tmp, ',');
         copies = std::stoi(tmp);
 
-        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        // creating the CookBook object with all the parameters and id increases by 1 after the value of id is stored in the object
         CookBook cookbook(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, cuisineType);
         cookbooks.push_back(cookbook);
     }
 
-    // close file and return vector of magazines
+    // close file and return vector of cookbooks
     file.close();
     return cookbooks;
 }
 
+// Function to read graphic novels from a CSV file into a vector of GraphicNovels objects
 std::vector<GraphicNovels> loadGraphicNovelsFromCSV(const std::string& filename, int id) {
-    // declare your container that will hold your list of magazines
+    // declare your container that will hold your list of graphic novels
     std::vector<GraphicNovels> graphicNovels;
 
     // open file
@@ -856,18 +897,15 @@ std::vector<GraphicNovels> loadGraphicNovelsFromCSV(const std::string& filename,
         std::getline(ss, tmp, ',');
         copies = std::stoi(tmp);
 
-        // creating the Magazine object with all the parameters and id increases by 1 after the value of id is stored in the object
+        // creating the GraphicNovels object with all the parameters and id increases by 1 after the value of id is stored in the object
         GraphicNovels graphicNovel(id++, title, yearPublished, price, pageCount, genre, summary, edition, copies, author, artStyle, issue);
         graphicNovels.push_back(graphicNovel);
     }
 
-    // close file and return vector of magazines
+    // close file and return vector of graphic novels
     file.close();
     return graphicNovels;
 }
-
-// Function Prototypes
-void log(std::string message);
 
 int main() {
     // Every time the program is started, the data in sales.txt is cleared and the file is closed
@@ -883,16 +921,18 @@ int main() {
     std::cout << "=== 1. Load Items From Files ===" << std::endl;
     std::vector<BasicInformation*> allItems;
     BasicInformation* temp;
+    // NOTE: the following comment explanation is basically the same logic for the other types of objects as well
     // Calls function to load books from csv file into a vector called 'books' of the type Book 
     std::vector<Book> books = loadBooksFromCSV("books.csv", ID);
+    // Creates a BasicInformation* vector called booksPtr
     std::vector<BasicInformation*> booksPtr;
-    for(Book &book:books)
+    for(Book &book:books) // loops through all books in books and sets a reference BasicInforamtion* to the object and pushes it into the booksPtr and allItems
     {
         temp = &book;
         booksPtr.push_back(temp);
         allItems.push_back(temp);
     }
-    ID = allItems.size();
+    ID = allItems.size(); // this allows for the next vector containing the next object type to start at an id after the previous vector
     std::vector<ChildrensBook> childrensBooks = loadChildrensBooksFromCSV("childrens-books.csv", ID);
     std::vector<BasicInformation*> childrensBooksPtr;
     for(ChildrensBook &book:childrensBooks)
@@ -940,7 +980,7 @@ int main() {
     ID = allItems.size();
 
     std::cout << "\n=== 2. Print full info for all items using a single std container to demonstrate polymorphism ===" << std::endl;
-    for(auto* item:allItems)
+    for(auto* item:allItems) // displays full information of all items
     {
         item->displayLongForm();
     }
@@ -948,13 +988,14 @@ int main() {
     std::cout << "\n=== 3. Print all items that cost less than $11.00 in short form format ===" << std::endl;
     for(auto& item:allItems)
     {
-        if(item->getPrice() < 11)
+        if(item->getPrice() < 11) // checks if the item is less than $11 and displays in short-form
             item->displayShortForm();
     }
     
     std::cout << "\n=== 4. Print all items that were published after `2010`, and cost less than $15, and contain the word `and` in the title or summary ===" << std::endl;
     for(auto& item:allItems)
     {
+        // checks if the item is published after 2010, cost less than $15, and either the title or summary have the keyword 'and'
         if(item->getYearPublished() > 2010 && item->getPrice() < 15 && (item->findQueried(item->getTitle(), "and") || item->findQueried(item->getSummary(), "and")))
             item->displayShortForm();
     }
@@ -962,22 +1003,24 @@ int main() {
     std::cout << "\n=== 5. Print all items that were published before the year 1900 or cost more than $100 ===" << std::endl;
     for(auto& item:allItems)
     {
-        if(item->getYearPublished() < 1900 || item->getPrice() > 100)
+        if(item->getYearPublished() < 1900 || item->getPrice() > 100) // checks if item is published before 1900 or cost more than $100
             item->displayShortForm();
     }
 
     std::cout << "\n=== 6. Print all Books and Childrens Books that were published between the years 2018 and 2021, do not include out of stock items ===" << std::endl;
     for(auto& item:allItems)
     {
+        // checks if item is a Book or Children's book, published between year 2018-2021 and is in stock 
         if((item->getType() == "Book" || item->getType() == "Children's Book") && (item->getYearPublished() > 2018 && item->getYearPublished() < 2021) && item->getCopies() != 0)
             item->displayShortForm();
     }
 
     std::cout << "\n=== 7. Print alphabetized list of all items, sorted further by latest issue/edition (for magazines/graphic novels/cookbooks/puzzle books) ===" << std::endl;
     std::vector<BasicInformation*> alphabetizedItems;
-
-    booksPtr = BasicInformation::alphabetize(booksPtr);
-    for(auto* item:booksPtr)
+    // NOTE: the following comment explanation is basically the same logic for the other types of objects as well
+    // alphabetize the bookPtr which comprises of BookInformation* pointers to the book object
+    booksPtr = BasicInformation::alphabetize(booksPtr); 
+    for(auto* item:booksPtr) // go through each item in booksPtr and add the alphabetized vector into alphabetizedItems
         alphabetizedItems.push_back(item);
 
     childrensBooksPtr = BasicInformation::alphabetize(childrensBooksPtr);
@@ -1010,13 +1053,13 @@ int main() {
     float totalCost = 0;
     std::vector<BasicInformation*> sellableItems;
 
-    for(auto& item:allItems)
+    for(auto& item:allItems) 
     {
-        if(item->getYearPublished() < 1900 || item->getPrice() > 100)
+        if(item->getYearPublished() < 1900 || item->getPrice() > 100) // check if the item is published before 1900 and cost more than $100 and add to sellableItems
             sellableItems.push_back(item);
     }
 
-    for(ISellable *item:sellableItems)
+    for(ISellable *item:sellableItems) // go through each item in sellableItems and sell it
     {
         item->sell();
     }
@@ -1024,9 +1067,9 @@ int main() {
     std::cout << "\n=== 9. Perform a 'Sale()' of all items in the inventory by utilizing the `ISellable` interface, using this provided code as-is ===" << std::endl;
     for(ISellable *item:allItems)
     {
-        if(item->sell())
+        if(item->sell()) // sells the item and if it was sellable and the sell() function returned true (meaning the sale was successful) then add the item's price into totalCost 
             totalCost += item->getCurrentPrice();
     }
 
-    std::cout << "Total Cost: $" << totalCost << std::endl;
+    std::cout << "Total Cost: $" << totalCost << std::endl; // displays total cost of the sales of all items in inventory
 }
